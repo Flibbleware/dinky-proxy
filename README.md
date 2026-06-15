@@ -1,6 +1,8 @@
-# DinkyProxy
+# DinkyProxy (macOS / Windows)
 
-Lightweight proxy helper built as a single Tauri application (React + TanStack Router on the frontend, Rust backend commands) inside a pnpm/Turborepo workspace.
+<img width="762" height="643" alt="Screenshot 2026-06-15 at 03 05 21" src="https://github.com/user-attachments/assets/3d2d6a65-ff89-4de8-828a-b9398a52a54c" />
+
+Lightweight proxy app built as a single Tauri application (React + TanStack Router on the frontend, Rust backend commands) inside a pnpm/Turborepo workspace.
 
 ## Monorepo layout
 
