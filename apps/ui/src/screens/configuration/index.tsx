@@ -134,7 +134,7 @@ const Configuration = ({ initialValues = {}, onSubmit }: ConfigurationFormProps)
                   aria-invalid={!!errors.bypassList}
                 />
                 <FieldDescription id="bypassList-description">
-                  Seperate each domain with a comma
+                  Seperate each domain with a new line
                 </FieldDescription>
                 <FieldError
                   id="bypassList-error"
