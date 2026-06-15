@@ -46,3 +46,6 @@ jobs:
 
       - name: Format check
         run: pnpm exec prettier --check .
+
+      - name: Dead code
+        run: pnpm dead-code
