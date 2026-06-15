@@ -3,9 +3,12 @@ name: Frontend
 on:
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   checks:
-    name: Frontend
+    name: Assurances
     runs-on: ubuntu-latest
 
     defaults:

@@ -6,9 +6,12 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+
 jobs:
   checks:
-    name: Backend
+    name: Assurances
     runs-on: ubuntu-latest
 
     steps:
