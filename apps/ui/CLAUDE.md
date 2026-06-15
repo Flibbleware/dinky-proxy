@@ -4,7 +4,6 @@
 
 - After editing any `.ts` or `.tsx` file, `prettier` runs automatically via a PostToolUse hook in `.claude/settings.json`. No manual formatting step needed.
 
-
 Applies to `.ts` / `.tsx` source files in this app.
 
 ## Type casting
