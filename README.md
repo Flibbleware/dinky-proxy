@@ -2,7 +2,7 @@
 
 Lightweight proxy app built as a single Tauri application (React + TanStack Router on the frontend, Rust backend commands) inside a pnpm/Turborepo workspace.
 
-Installers: for now the apps are available via the latest build action, proper signed releases coming soon...
+Installers: for now the apps are available via the [latest build action](https://github.com/Flibbleware/dinky-proxy/actions/workflows/build.yml), proper signed releases coming soon...
 
 <img width="762" height="643" alt="Screenshot 2026-06-15 at 03 15 11" src="https://github.com/user-attachments/assets/329149da-3c0a-4160-b8a3-344bc4c2fe96" />
 
