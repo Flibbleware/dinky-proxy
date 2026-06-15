@@ -80,7 +80,7 @@ mod tests {
 
     #[test]
     fn valid_credentials_returns_ok() {
-        let result = load_credentials(&config("user", "test-password"));
+        let result = load_credentials(&config("user", "test-password")); // codeql[rust/hard-coded-cryptographic-value]
         assert!(result.is_ok());
         let creds = result.unwrap();
         assert_eq!(creds.username, "user");
