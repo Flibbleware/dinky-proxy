@@ -12,6 +12,7 @@ on:
 
 jobs:
   checks:
+    name: Backend
     runs-on: ubuntu-latest
 
     steps:

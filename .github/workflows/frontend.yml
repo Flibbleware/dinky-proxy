@@ -5,6 +5,7 @@ on:
 
 jobs:
   checks:
+    name: Frontend
     runs-on: ubuntu-latest
 
     defaults:
