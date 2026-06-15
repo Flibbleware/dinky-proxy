@@ -19,7 +19,7 @@ test('shows validation error for empty required field', async ({ page, pageUrl }
   await page.goto(pageUrl)
 
   const proxyHost = page.getByLabel('Proxy host')
-  await expect(proxyHost).toHaveValue('xx.xx.xx.xx')
+  await expect(proxyHost).toHaveValue('')
   await proxyHost.clear()
   await page.getByRole('button', { name: 'Save configuration' }).click()
 

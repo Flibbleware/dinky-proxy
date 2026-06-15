@@ -17,7 +17,7 @@ export const getFormDefaults = (
 ): ConfigurationFormFields => ({
   port: initialValues.port ?? 8888,
   proxyProtocol: initialValues.proxyProtocol ?? 'http',
-  proxyHost: initialValues.proxyHost ?? 'xx.xx.xx.xx',
+  proxyHost: initialValues.proxyHost ?? '',
   proxyPort: initialValues.proxyPort ?? 8080,
   pacServerPort: initialValues.pacServerPort ?? 8000,
   networkTarget: initialValues.networkTarget ?? 'Wi-Fi',
