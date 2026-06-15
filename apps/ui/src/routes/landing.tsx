@@ -56,7 +56,9 @@ const Landing = () => {
       <div className="mx-auto flex max-w-3xl flex-col gap-8 px-6 py-12">
         <header className="flex flex-col gap-4">
           <div>
-            <p className="text-[11px] tracking-[0.35em] text-emerald-200/80 uppercase">DinkyProxy</p>
+            <p className="text-[11px] tracking-[0.35em] text-emerald-200/80 uppercase">
+              DinkyProxy
+            </p>
             <h1 className="mt-2 text-3xl font-semibold text-white md:text-4xl">Configuration</h1>
             <p className="mt-3 max-w-2xl text-sm text-slate-300">
               Configure the proxy settings and domains to funnel through the proxy.
