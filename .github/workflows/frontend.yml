@@ -1,0 +1,41 @@
+name: Frontend
+
+on:
+  pull_request:
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: apps/ui
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install PNPM
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: pnpm
+
+      - name: Install dependencies
+        working-directory: .
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Generate route tree
+        run: pnpm exec tsr generate
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Type check
+        run: pnpm exec tsc -b --noEmit
+
+      - name: Format check
+        run: pnpm exec prettier --check .

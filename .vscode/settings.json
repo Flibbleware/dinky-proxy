@@ -1,0 +1,16 @@
+{
+  "rust-analyzer.linkedProjects": ["apps/ui/src-tauri/Cargo.toml"],
+  "rust-analyzer.check.command": "clippy",
+  "rust-analyzer.check.extraArgs": ["--", "-D", "warnings"],
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/.vite": true,
+    "**/.turbo": true,
+    "**/build": true
+  },
+  "[rust]": {
+    "editor.defaultFormatter": "rust-lang.rust-analyzer"
+  },
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true
+}

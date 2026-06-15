@@ -1,0 +1,67 @@
+name: Tests
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  playwright:
+    runs-on: macos-latest
+    defaults:
+      run:
+        working-directory: apps/ui
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Rust dependencies
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: apps/ui/src-tauri
+
+      - name: Install PNPM
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: pnpm
+
+      # Root install must run from repo root
+      - name: Install workspace dependencies
+        working-directory: .
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Generate route tree
+        run: pnpm exec tsr generate
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Caches/ms-playwright
+          key: playwright-${{ hashFiles('**/pnpm-lock.yaml') }}
+
+      - name: Install Playwright Browsers
+        run: pnpm exec playwright install chromium --with-deps
+
+      # Pre-bundle Vite deps so the optimize-triggered page reload happens
+      # here on a cold CI cache, not mid-test once Playwright has connected.
+      - name: Warm Vite dependency cache
+        run: pnpm exec vite optimize
+
+      - name: Run E2E tests
+        run: pnpm exec playwright test
+
+      - name: Upload Playwright artifacts (screenshots, videos, traces)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-artifacts
+          path: apps/ui/playwright-report/

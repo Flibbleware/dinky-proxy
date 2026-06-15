@@ -1,0 +1,31 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Build outputs
+dist
+target
+.turbo
+*.tsbuildinfo
+tauri-fixture.js
+
+# Packages and caches
+node_modules
+.tanstack
+.vite
+
+# Generated files
+apps/ui/src/routeTree.gen.ts
+apps/ui/src-tauri/gen/
+**/playwright-report/
+test-results
+
+# Local env/config
+.env
+*.local
+.DS_Store
+
+# Editors/IDE
+*.sw?
