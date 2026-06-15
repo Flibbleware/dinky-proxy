@@ -5,7 +5,7 @@ on:
 
 jobs:
   checks:
-    name: Frontend
+    name: Assurances
     runs-on: ubuntu-latest
 
     defaults:
