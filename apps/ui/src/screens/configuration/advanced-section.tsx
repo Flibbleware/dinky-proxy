@@ -1,12 +1,5 @@
 import { type FieldErrors } from 'react-hook-form'
-import {
-  Field,
-  FieldContent,
-  FieldDescription,
-  FieldError,
-  FieldLabel,
-  FieldSet,
-} from '@/components/controls/field'
+import { Field, FieldContent, FieldError, FieldLabel, FieldSet } from '@/components/controls/field'
 import { Input } from '@/components/controls/input'
 import { type ConfigurationFormFields } from './types'
 import { Select, SelectOption } from '@/components/controls/select'
@@ -26,60 +19,73 @@ const AdvancedConfigurationSection = ({ field, errors }: AdvancedConfigurationSe
         Advanced settings
       </h2>
       <Field>
-        <FieldLabel<ConfigurationFormFields> htmlFor="proxyProtocol">Proxy protocol</FieldLabel>
+        <FieldLabel<ConfigurationFormFields>
+          htmlFor="proxyProtocol"
+          hint="Choose the upstream proxy type. Credentials are used for both."
+        >
+          Proxy protocol
+        </FieldLabel>
         <FieldContent>
           <Select {...field('proxyProtocol')} aria-invalid={!!errors.proxyProtocol}>
             <SelectOption value="http">HTTP</SelectOption>
             <SelectOption value="socks5">SOCKS5</SelectOption>
           </Select>
-          <FieldDescription id="proxyProtocol-description">
-            Choose the upstream proxy type. Credentials are used for both.
-          </FieldDescription>
           <FieldError
             id="proxyProtocol-error"
             errors={errors.proxyProtocol ? [errors.proxyProtocol] : undefined}
           />
         </FieldContent>
       </Field>
-      <Field>
-        <FieldLabel<ConfigurationFormFields> htmlFor="port">Local Server port</FieldLabel>
-        <FieldContent>
-          <Input
-            {...field('port', { valueAsNumber: true })}
-            type="number"
-            inputMode="numeric"
-            autoComplete="off"
-            aria-invalid={!!errors.port}
-          />
-          <FieldDescription id="port-description">
-            The port the local wrapper listens on (used in the PAC file).
-          </FieldDescription>
-          <FieldError id="port-error" errors={errors.port ? [errors.port] : undefined} />
-        </FieldContent>
-      </Field>
+      <div className="grid grid-cols-2 items-start gap-3">
+        <Field>
+          <FieldLabel<ConfigurationFormFields>
+            htmlFor="port"
+            hint="The port the local wrapper listens on (used in the PAC file)."
+          >
+            Local Server port
+          </FieldLabel>
+          <FieldContent>
+            <Input
+              {...field('port', { valueAsNumber: true })}
+              type="number"
+              inputMode="numeric"
+              autoComplete="off"
+              aria-invalid={!!errors.port}
+            />
+            <FieldError id="port-error" errors={errors.port ? [errors.port] : undefined} />
+          </FieldContent>
+        </Field>
+
+        <Field>
+          <FieldLabel<ConfigurationFormFields>
+            htmlFor="pacServerPort"
+            hint="The port serving the PAC file (http://localhost:<port>)."
+          >
+            PAC server port
+          </FieldLabel>
+          <FieldContent>
+            <Input
+              {...field('pacServerPort', { valueAsNumber: true })}
+              type="number"
+              inputMode="numeric"
+              autoComplete="off"
+              aria-invalid={!!errors.pacServerPort}
+            />
+            <FieldError
+              id="pacServerPort-error"
+              errors={errors.pacServerPort ? [errors.pacServerPort] : undefined}
+            />
+          </FieldContent>
+        </Field>
+      </div>
 
       <Field>
-        <FieldLabel<ConfigurationFormFields> htmlFor="pacServerPort">PAC server port</FieldLabel>
-        <FieldContent>
-          <Input
-            {...field('pacServerPort', { valueAsNumber: true })}
-            type="number"
-            inputMode="numeric"
-            autoComplete="off"
-            aria-invalid={!!errors.pacServerPort}
-          />
-          <FieldDescription id="pacServerPort-description">
-            The port serving the PAC file (http://localhost:&lt;port&gt;).
-          </FieldDescription>
-          <FieldError
-            id="pacServerPort-error"
-            errors={errors.pacServerPort ? [errors.pacServerPort] : undefined}
-          />
-        </FieldContent>
-      </Field>
-
-      <Field>
-        <FieldLabel<ConfigurationFormFields> htmlFor="networkTarget">Network service</FieldLabel>
+        <FieldLabel<ConfigurationFormFields>
+          htmlFor="networkTarget"
+          hint="The network service name to apply proxy settings to (e.g. Wi-Fi)."
+        >
+          Network service
+        </FieldLabel>
         <FieldContent>
           <Input
             {...field('networkTarget')}
@@ -87,9 +93,6 @@ const AdvancedConfigurationSection = ({ field, errors }: AdvancedConfigurationSe
             autoComplete="off"
             aria-invalid={!!errors.networkTarget}
           />
-          <FieldDescription id="networkTarget-description">
-            The network service name to apply proxy settings to (e.g. Wi-Fi).
-          </FieldDescription>
           <FieldError
             id="networkTarget-error"
             errors={errors.networkTarget ? [errors.networkTarget] : undefined}

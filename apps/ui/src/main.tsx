@@ -4,6 +4,7 @@ import { RouterProvider, createHashHistory, createRouter } from '@tanstack/react
 // run pnpm dev to generate
 import { routeTree } from './routeTree.gen'
 import { Toaster } from './components/controls/sonner'
+import { TooltipProvider } from './components/controls/tooltip'
 import { AppError, ErrorBoundary } from './components/error-boundary'
 
 const router = createRouter({
@@ -22,8 +23,10 @@ declare module '@tanstack/react-router' {
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ErrorBoundary>
-      <RouterProvider router={router} />
-      <Toaster />
+      <TooltipProvider delayDuration={300}>
+        <RouterProvider router={router} />
+        <Toaster />
+      </TooltipProvider>
     </ErrorBoundary>
   </StrictMode>,
 )
