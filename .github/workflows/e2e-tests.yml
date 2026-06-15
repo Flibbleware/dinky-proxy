@@ -8,6 +8,7 @@ on:
 
 jobs:
   playwright:
+    name: Tests
     runs-on: macos-latest
     defaults:
       run:
