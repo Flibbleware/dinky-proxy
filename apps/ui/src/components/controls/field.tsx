@@ -55,7 +55,7 @@ const FieldLabel = <TFieldValues extends Record<string, unknown> = Record<string
       <Tooltip>
         <TooltipTrigger
           type="button"
-          className="focus-visible:ring-ring/50 cursor-pointer rounded-full text-orange-200 outline-none hover:text-orange-500 focus-visible:ring-[3px]"
+          className="focus-visible:ring-ring/50 cursor-pointer rounded-full text-slate-500 outline-none hover:text-slate-300 focus-visible:text-slate-300 focus-visible:ring-[3px]"
           aria-label="More information"
         >
           <CircleHelp className="size-4" />
@@ -64,6 +64,10 @@ const FieldLabel = <TFieldValues extends Record<string, unknown> = Record<string
       </Tooltip>
     )}
   </div>
+)
+
+const FieldDescription = ({ className, ...props }: ComponentProps<'p'>) => (
+  <p className={cn('text-sm leading-snug text-slate-400', className)} {...props} />
 )
 
 type FieldErrorProps = ComponentProps<'div'> & {
@@ -98,4 +102,4 @@ const FieldError = ({ className, children, errors, ...props }: FieldErrorProps) 
   )
 }
 
-export { Field, FieldLabel, FieldError, FieldSet, FieldContent }
+export { Field, FieldLabel, FieldError, FieldSet, FieldContent, FieldDescription }

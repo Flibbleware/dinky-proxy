@@ -2,7 +2,14 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '@/components/controls/button'
-import { Field, FieldContent, FieldError, FieldLabel, FieldSet } from '@/components/controls/field'
+import {
+  Field,
+  FieldContent,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+  FieldSet,
+} from '@/components/controls/field'
 import { Input } from '@/components/controls/input'
 import { Textarea } from '@/components/controls/textarea'
 import { type ConfigurationFormFields, type ConfigurationFormValues } from './types'
@@ -120,23 +127,22 @@ const Configuration = ({ initialValues = {}, onSubmit }: ConfigurationFormProps)
             </div>
 
             <Field>
-              <FieldLabel<ConfigurationFormFields>
-                htmlFor="bypassList"
-                hint="Separate each domain with a new line"
-              >
-                Domains
-              </FieldLabel>
+              <FieldLabel<ConfigurationFormFields> htmlFor="bypassList">Domains</FieldLabel>
               <FieldContent>
                 <Textarea
                   {...createFieldProps('bypassList')}
                   rows={5}
                   placeholder="localhost&#10;*.internal.company&#10;example.com"
                   aria-invalid={!!errors.bypassList}
+                  aria-describedby="bypassList-description"
                 />
                 <FieldError
                   id="bypassList-error"
                   errors={errors.bypassList ? [errors.bypassList] : undefined}
                 />
+                <FieldDescription id="bypassList-description">
+                  Separate each domain with a new line
+                </FieldDescription>
               </FieldContent>
             </Field>
           </FieldSet>

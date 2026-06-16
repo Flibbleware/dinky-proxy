@@ -8,12 +8,15 @@ const TooltipTrigger = TooltipPrimitive.Trigger
 
 const TooltipContent = ({
   className,
-  sideOffset = 4,
+  sideOffset = 6,
+  collisionPadding = 8,
+  children,
   ...props
 }: ComponentProps<typeof TooltipPrimitive.Content>) => (
   <TooltipPrimitive.Portal>
     <TooltipPrimitive.Content
       sideOffset={sideOffset}
+      collisionPadding={collisionPadding}
       className={cn(
         'z-50 max-w-xs rounded-md border border-slate-600 bg-slate-700 px-3 py-1.5 text-sm text-slate-200 shadow-md',
         'animate-in fade-in-0 zoom-in-95',
@@ -23,7 +26,10 @@ const TooltipContent = ({
         className,
       )}
       {...props}
-    />
+    >
+      {children}
+      <TooltipPrimitive.Arrow className="fill-slate-700" width={11} height={5} />
+    </TooltipPrimitive.Content>
   </TooltipPrimitive.Portal>
 )
 
