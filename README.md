@@ -2,7 +2,7 @@
 
 Lightweight proxy app built as a single Tauri application (React + TanStack Router on the frontend, Rust backend commands) inside a pnpm/Turborepo workspace.
 
-Installers: for now the apps are available via the latest build action, proper signed releases coming soon...
+Installers: for now the apps are available via the [latest build action](https://github.com/Flibbleware/dinky-proxy/actions/workflows/build.yml), proper signed releases coming soon...
 
 <img width="762" height="643" alt="Screenshot 2026-06-15 at 03 15 11" src="https://github.com/user-attachments/assets/329149da-3c0a-4160-b8a3-344bc4c2fe96" />
 
@@ -56,7 +56,7 @@ pnpm install
 
 This installs `turbo` and wires workspace packages.
 
-## Dev workflow
+## Run dev app
 
 ```bash
 pnpm dev
@@ -65,11 +65,11 @@ pnpm lint
 
 `tauri dev` automatically starts the Vite dev server on :5173 and the Rust backend inside the same process. Logs from both land in the same terminal.
 
-### Run React app only
+### Run React dev app only (Vite, no Tauri)
 
 ```bash
 cd apps/ui
-pnpm dev
+pnpm dev:vite
 ```
 
 ### Formatting and linting
@@ -78,6 +78,14 @@ pnpm dev
 cd apps/ui && pnpm format  # prettier (UI package only)
 pnpm lint                  # eslint across the workspace (Rust clippy/rustfmt run in CI)
 ```
+
+### Dead code detection
+
+```bash
+cd apps/ui && pnpm dead-code
+```
+
+Runs [Fallow](https://docs.fallow.tools) to detect unused exports, unreachable files, and unlisted dependencies across the React app. The same check runs in the Frontend CI workflow.
 
 ### Building
 
@@ -116,7 +124,7 @@ Four workflows run automatically:
 
 | Workflow     | Trigger                                            | What it does                                                                                                          |
 | ------------ | -------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| **Frontend** | Every PR                                           | Runs ESLint, TypeScript type-check, and Prettier format check (`ubuntu-latest`)                                       |
+| **Frontend** | Every PR and push to `main`                        | Runs ESLint, TypeScript type-check, Prettier format check, and Fallow dead code detection (`ubuntu-latest`)           |
 | **Backend**  | Every PR or push to `main` touching `src-tauri/**` | Runs Rust unit tests, Clippy lint, and rustfmt format check (`ubuntu-latest`)                                         |
 | **Tests**    | Every PR and push to `main`                        | Runs Playwright E2E tests (`macos-latest`)                                                                            |
 | **Build**    | Push to `main`                                     | Builds native installers on macOS (`.dmg`) and Windows (`.msi` / `.exe`) and uploads them as GitHub Actions artifacts |

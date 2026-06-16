@@ -2,10 +2,16 @@ name: Frontend
 
 on:
   pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
 
 jobs:
   checks:
-    name: Frontend
+    name: Assurances
     runs-on: ubuntu-latest
 
     defaults:
@@ -40,3 +46,6 @@ jobs:
 
       - name: Format check
         run: pnpm exec prettier --check .
+
+      - name: Dead code
+        run: pnpm dead-code
