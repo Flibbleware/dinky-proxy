@@ -134,7 +134,6 @@ const Configuration = ({ initialValues = {}, onSubmit }: ConfigurationFormProps)
                   rows={5}
                   placeholder="localhost&#10;*.internal.company&#10;example.com"
                   aria-invalid={!!errors.bypassList}
-                  aria-describedby="bypassList-description"
                 />
                 <FieldError
                   id="bypassList-error"

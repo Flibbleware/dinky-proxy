@@ -56,7 +56,7 @@ const FieldLabel = <TFieldValues extends Record<string, unknown> = Record<string
         <TooltipTrigger
           type="button"
           className="focus-visible:ring-ring/50 cursor-pointer rounded-full text-slate-500 outline-none hover:text-slate-300 focus-visible:text-slate-300 focus-visible:ring-[3px]"
-          aria-label="More information"
+          aria-label={typeof children === 'string' ? `More information about ${children}` : 'More information'}
         >
           <CircleHelp className="size-4" />
         </TooltipTrigger>
