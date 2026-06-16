@@ -44,9 +44,9 @@ const Configuration = ({ initialValues = {}, onSubmit }: ConfigurationFormProps)
               <Field>
                 <FieldLabel<ConfigurationFormFields>
                   htmlFor="proxyHost"
-                  hint="The upstream proxy hostname or IP address."
+                  hint="The remote proxy hostname / IP address"
                 >
-                  Proxy host
+                  Host
                 </FieldLabel>
                 <FieldContent>
                   <Input
@@ -124,7 +124,7 @@ const Configuration = ({ initialValues = {}, onSubmit }: ConfigurationFormProps)
                 htmlFor="bypassList"
                 hint="Separate each domain with a new line"
               >
-                Use proxy for domains
+                Domains
               </FieldLabel>
               <FieldContent>
                 <Textarea
@@ -142,11 +142,11 @@ const Configuration = ({ initialValues = {}, onSubmit }: ConfigurationFormProps)
           </FieldSet>
         </FormSection>
 
-        <div id="advanced-settings">
-          {showAdvanced && (
+        {showAdvanced && (
+          <div id="advanced-settings">
             <AdvancedConfigurationSection field={createFieldProps} errors={errors} />
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       <div className="flex items-center justify-between gap-3">
