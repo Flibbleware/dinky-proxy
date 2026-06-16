@@ -6,11 +6,23 @@ import type { ConfigurationFormProps } from '.'
 
 export const createFieldHelper =
   <TFieldValues extends Record<string, unknown>>(register: UseFormRegister<TFieldValues>) =>
-  <T extends FieldPath<TFieldValues>>(name: T, options?: RegisterOptions<TFieldValues, T>) => ({
-    id: name,
-    'aria-describedby': `${name}-description ${name}-error`,
-    ...register(name, options),
-  })
+  <T extends FieldPath<TFieldValues>>(
+    name: T,
+    options?: RegisterOptions<TFieldValues, T> & { describedBy?: boolean },
+  ) => {
+    // Only reference the description element for fields that actually render one,
+    // otherwise aria-describedby points at an id that never exists.
+    const { describedBy, ...registerOptions } = options ?? {}
+    const describedByIds = [describedBy ? `${name}-description` : undefined, `${name}-error`]
+      .filter(Boolean)
+      .join(' ')
+
+    return {
+      id: name,
+      'aria-describedby': describedByIds,
+      ...register(name, registerOptions),
+    }
+  }
 
 export const getFormDefaults = (
   initialValues: Partial<ConfigurationFormValues>,

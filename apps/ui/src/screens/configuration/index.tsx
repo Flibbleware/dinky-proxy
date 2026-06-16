@@ -130,7 +130,7 @@ const Configuration = ({ initialValues = {}, onSubmit }: ConfigurationFormProps)
               <FieldLabel<ConfigurationFormFields> htmlFor="bypassList">Domains</FieldLabel>
               <FieldContent>
                 <Textarea
-                  {...createFieldProps('bypassList')}
+                  {...createFieldProps('bypassList', { describedBy: true })}
                   rows={5}
                   placeholder="localhost&#10;*.internal.company&#10;example.com"
                   aria-invalid={!!errors.bypassList}

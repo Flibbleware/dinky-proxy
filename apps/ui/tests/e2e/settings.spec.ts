@@ -50,7 +50,10 @@ test('shows the domains hint as inline helper text', async ({ page, pageUrl }) =
 
   const hint = page.getByText('Separate each domain with a new line')
   await expect(hint).toBeVisible()
-  await expect(page.getByLabel('Domains')).toHaveAttribute('aria-describedby', /bypassList-description/)
+  await expect(page.getByLabel('Domains')).toHaveAttribute(
+    'aria-describedby',
+    /bypassList-description/,
+  )
 })
 
 test('toggles advanced settings', async ({ page, pageUrl }) => {
