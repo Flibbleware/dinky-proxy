@@ -14,10 +14,15 @@ export default defineConfig({
   timeout: 60_000, // to compensate for first cold boot
   expect: {
     timeout: TIMEOUT,
+    toHaveScreenshot: {
+      maxDiffPixelRatio: 0.02,
+      animations: 'disabled',
+    },
   },
   use: {
     actionTimeout: TIMEOUT,
     trace: 'on-first-retry',
     video: 'on-first-retry',
+    viewport: { width: 650, height: 680 },
   },
 })
