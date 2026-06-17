@@ -3,7 +3,7 @@ use anyhow::Result;
 #[cfg(not(debug_assertions))]
 use anyhow::{anyhow, Context};
 #[cfg(not(debug_assertions))]
-use keyring::Entry;
+use keyring_core::Entry;
 
 #[cfg(not(debug_assertions))]
 const SERVICE_NAME: &str = "com.dinkyproxy.client";
@@ -29,7 +29,7 @@ pub fn get_or_create_master_key() -> Result<String> {
 
         match entry.get_password() {
             Ok(key) => Ok(key),
-            Err(keyring::Error::NoEntry) => {
+            Err(keyring_core::Error::NoEntry) => {
                 let master_key = generate_master_key();
                 entry
                     .set_password(&master_key)
