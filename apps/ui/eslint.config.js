@@ -9,7 +9,18 @@ import jsxA11y from 'eslint-plugin-jsx-a11y'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
-  globalIgnores(['dist', 'build', 'src-tauri', 'tests/tauri-fixture.{js,ts}']),
+  globalIgnores([
+    'dist',
+    'build',
+    'src-tauri',
+    'tests/tauri-fixture.{js,ts}',
+    // Generated files
+    'src/routeTree.gen.ts',
+    // Caches / tooling artifacts
+    '.turbo',
+    '.vite',
+    '.tanstack',
+  ]),
   {
     files: ['**/*.{ts,tsx,js}'],
     extends: [
