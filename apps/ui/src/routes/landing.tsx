@@ -6,7 +6,7 @@ import type { ConfigurationFormValues } from '@/screens/configuration/types'
 
 const loadConfig = async (): Promise<ConfigurationFormValues | null> => {
   try {
-    const config: ConfigurationFormValues = await invoke('load_config_command')
+    const config = (await invoke('load_config_command')) as ConfigurationFormValues
 
     if (
       typeof config.port === 'number' &&
