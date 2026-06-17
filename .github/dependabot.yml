@@ -4,6 +4,8 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    cooldown:
+      default-days: 7
     ignore:
       # Keep @types/node aligned with the Node runtime we actually run (24.x).
       - dependency-name: "@types/node"
@@ -13,3 +15,5 @@ updates:
     directory: "/apps/ui/src-tauri"
     schedule:
       interval: "weekly"
+    cooldown:
+      default-days: 7
