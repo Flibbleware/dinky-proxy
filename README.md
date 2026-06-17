@@ -4,7 +4,7 @@ Lightweight proxy app built as a single Tauri application (React + TanStack Rout
 
 Installers: for now the apps are available via the [latest build action](https://github.com/Flibbleware/dinky-proxy/actions/workflows/build.yml), proper signed releases coming soon...
 
-<img width="762" height="643" alt="Screenshot 2026-06-15 at 03 15 11" src="https://github.com/user-attachments/assets/329149da-3c0a-4160-b8a3-344bc4c2fe96" />
+<img width="753" height="577" alt="Screenshot 2026-06-17 at 18 36 22" src="https://github.com/user-attachments/assets/5c8257bf-0fc6-45ae-882f-8420e452a5d8" />
 
 ## Monorepo layout
 
