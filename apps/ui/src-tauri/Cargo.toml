@@ -23,7 +23,7 @@ sha2 = "0.10"
 base64 = "0.22"
 url = "2.5"
 keyring-core = "1.0"
-rand = "0.8"
+rand = "0.9"
 hex = "0.4"
 image = "0.25"
 
