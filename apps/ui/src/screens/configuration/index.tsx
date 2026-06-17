@@ -49,7 +49,12 @@ const Configuration = ({ initialValues = {}, onSubmit }: ConfigurationFormProps)
             <legend className="sr-only">Proxy settings</legend>
             <div className="grid grid-cols-[1fr_auto] items-start gap-3">
               <Field>
-                <FieldLabel<ConfigurationFormFields> htmlFor="proxyHost">Proxy host</FieldLabel>
+                <FieldLabel<ConfigurationFormFields>
+                  htmlFor="proxyHost"
+                  hint="The remote proxy hostname / IP address"
+                >
+                  Host
+                </FieldLabel>
                 <FieldContent>
                   <Input
                     {...createFieldProps('proxyHost')}
@@ -57,9 +62,6 @@ const Configuration = ({ initialValues = {}, onSubmit }: ConfigurationFormProps)
                     autoComplete="off"
                     aria-invalid={!!errors.proxyHost}
                   />
-                  <FieldDescription id="proxyHost-description">
-                    The upstream proxy hostname or IP address.
-                  </FieldDescription>
                   <FieldError
                     id="proxyHost-error"
                     errors={errors.proxyHost ? [errors.proxyHost] : undefined}
@@ -103,7 +105,12 @@ const Configuration = ({ initialValues = {}, onSubmit }: ConfigurationFormProps)
               </Field>
 
               <Field>
-                <FieldLabel<ConfigurationFormFields> htmlFor="password">Password</FieldLabel>
+                <FieldLabel<ConfigurationFormFields>
+                  htmlFor="password"
+                  hint="Stored securely in the keychain"
+                >
+                  Password
+                </FieldLabel>
                 <FieldContent>
                   <Input
                     {...createFieldProps('password')}
@@ -111,9 +118,6 @@ const Configuration = ({ initialValues = {}, onSubmit }: ConfigurationFormProps)
                     autoComplete="new-password"
                     aria-invalid={!!errors.password}
                   />
-                  <FieldDescription id="password-description">
-                    Stored securely in the keychain
-                  </FieldDescription>
                   <FieldError
                     id="password-error"
                     errors={errors.password ? [errors.password] : undefined}
@@ -123,33 +127,31 @@ const Configuration = ({ initialValues = {}, onSubmit }: ConfigurationFormProps)
             </div>
 
             <Field>
-              <FieldLabel<ConfigurationFormFields> htmlFor="bypassList">
-                Use proxy for domains
-              </FieldLabel>
+              <FieldLabel<ConfigurationFormFields> htmlFor="bypassList">Domains</FieldLabel>
               <FieldContent>
                 <Textarea
-                  {...createFieldProps('bypassList')}
+                  {...createFieldProps('bypassList', { describedBy: true })}
                   rows={5}
                   placeholder="localhost&#10;*.internal.company&#10;example.com"
                   aria-invalid={!!errors.bypassList}
                 />
-                <FieldDescription id="bypassList-description">
-                  Seperate each domain with a new line
-                </FieldDescription>
                 <FieldError
                   id="bypassList-error"
                   errors={errors.bypassList ? [errors.bypassList] : undefined}
                 />
+                <FieldDescription id="bypassList-description">
+                  Separate each domain with a new line
+                </FieldDescription>
               </FieldContent>
             </Field>
           </FieldSet>
         </FormSection>
 
-        <div id="advanced-settings">
-          {showAdvanced && (
+        {showAdvanced && (
+          <div id="advanced-settings">
             <AdvancedConfigurationSection field={createFieldProps} errors={errors} />
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       <div className="flex items-center justify-between gap-3">

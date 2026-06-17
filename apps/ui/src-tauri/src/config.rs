@@ -11,7 +11,7 @@ use std::fs;
 use std::path::PathBuf;
 use tauri::{AppHandle, Manager};
 
-const DEFAULT_PROXY_HOST: &str = "xx.xx.xx.xx";
+const DEFAULT_PROXY_HOST: &str = "";
 const DEFAULT_PROXY_PORT: u16 = 8080;
 const DEFAULT_PAC_PORT: u16 = 8000;
 const DEFAULT_LOCAL_PROXY_PORT: u16 = 8888;

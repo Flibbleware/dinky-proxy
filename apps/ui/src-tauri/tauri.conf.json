@@ -13,8 +13,8 @@
       {
         "label": "main",
         "title": "DinkyProxy Configuration",
-        "width": 800,
-        "height": 790,
+        "width": 650,
+        "height": 680,
         "visible": false,
         "skipTaskbar": true
       }
