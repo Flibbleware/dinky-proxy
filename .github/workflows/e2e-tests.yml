@@ -1,4 +1,4 @@
-name: Tests
+name: E2E Tests
 
 on:
   pull_request:
@@ -6,9 +6,12 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+
 jobs:
   playwright:
-    name: Tests
+    name: Run
     runs-on: macos-latest
     defaults:
       run:
