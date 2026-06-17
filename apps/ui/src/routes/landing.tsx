@@ -6,10 +6,9 @@ import type { ConfigurationFormValues } from '@/screens/configuration/types'
 
 const loadConfig = async (): Promise<ConfigurationFormValues | null> => {
   try {
-    const config: ConfigurationFormValues = await invoke('load_config_command')
+    const config = (await invoke('load_config_command')) as ConfigurationFormValues
 
     if (
-      config &&
       typeof config.port === 'number' &&
       Array.isArray(config.bypassDomains) &&
       typeof config.proxyHost === 'string' &&
@@ -35,16 +34,14 @@ const Landing = () => {
   )
 
   useEffect(() => {
-    let cancelled = false
+    const controller = new AbortController()
 
-    ;(async () => {
+    void (async () => {
       const result = await loadConfig()
-      if (!cancelled) setInitialConfig(result)
+      if (!controller.signal.aborted) setInitialConfig(result)
     })()
 
-    return () => {
-      cancelled = true
-    }
+    return () => controller.abort()
   }, [])
 
   const handleSubmit = async (values: ConfigurationFormValues) => {
