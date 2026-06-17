@@ -118,6 +118,18 @@ pnpm test:e2e
 
 Runs the Playwright suite from the repo root. Tests live in `apps/ui/tests/e2e/`. On failure, screenshots, videos, and traces are written to `apps/ui/playwright-report/`.
 
+### Visual regression
+
+Key tests capture full-page screenshots and compare them against committed baseline snapshots using Playwright's `toHaveScreenshot`.
+
+To update regenerate the baselines locally with:
+
+```bash
+pnpm test:e2e:update
+```
+
+Commit the updated snapshots alongside the code change. If this is missed the CI step will block the PR.
+
 ## CI (GitHub Actions)
 
 Four workflows run automatically:
