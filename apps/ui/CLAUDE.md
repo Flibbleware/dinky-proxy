@@ -25,3 +25,5 @@ Applies to `.ts` / `.tsx` source files in this app.
 ## Playwright tests
 
 - Always select elements using accessible, user-meaningful queries — prefer `getByRole`, `getByLabel`, `getByText`, and `getByPlaceholder` over CSS selectors, test IDs, or DOM structure. Tests should find elements the way a user perceives them, which keeps them resilient to markup changes and doubles as a check that the UI is actually accessible.
+
+- Always assert the UI is in the expected state immediately before taking a snapshot. The assertion should confirm a key element of the state being captured — a visible form field, an error message, an expanded section — not just that the page loaded. This ensures the snapshot reflects the intended state rather than a loading or transitional one. Use the `screenshot(page, 'name')` helper from `tauri-fixture` rather than calling `toHaveScreenshot` directly — it bakes in `fullPage: true` and the required `.png` extension.

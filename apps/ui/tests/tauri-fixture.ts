@@ -1,4 +1,4 @@
-import { test as base, expect } from '@playwright/test'
+import { test as base, expect, type Page } from '@playwright/test'
 import { spawn } from 'child_process'
 import path from 'path'
 import { fileURLToPath } from 'url'
@@ -77,3 +77,6 @@ export const test = base.extend<
 })
 
 export { expect }
+
+export const fullPageScreenshot = (page: Page, name: string) =>
+  expect(page).toHaveScreenshot(`${name}.png`, { fullPage: true })

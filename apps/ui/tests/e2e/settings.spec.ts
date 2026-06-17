@@ -1,8 +1,9 @@
-import { test, expect } from '../tauri-fixture'
+import { test, expect, fullPageScreenshot } from '../tauri-fixture'
 
 test('loads the settings page', async ({ page, pageUrl }) => {
   await page.goto(pageUrl)
-  await expect(page.getByText('DinkyProxy')).toBeVisible()
+  await expect(page.getByLabel('Host', { exact: true })).toBeVisible()
+  await fullPageScreenshot(page, 'settings-default')
 })
 
 test('shows all basic fields on load', async ({ page, pageUrl }) => {
@@ -29,6 +30,7 @@ test('shows validation error for empty required field', async ({ page, pageUrl }
 
   await expect(page.getByText('Proxy host is required')).toBeVisible()
   await expect(proxyHost).toHaveAttribute('aria-invalid', 'true')
+  await fullPageScreenshot(page, 'settings-validation-errors')
 })
 
 test('reveals field hint tooltips on focus', async ({ page, pageUrl }) => {
@@ -72,4 +74,5 @@ test('toggles advanced settings', async ({ page, pageUrl }) => {
   await expect(page.getByLabel('PAC server port', { exact: true })).toBeVisible()
   await expect(page.getByLabel('Network service', { exact: true })).toBeVisible()
   await expect(page.getByRole('button', { name: 'Hide advanced settings' })).toBeVisible()
+  await fullPageScreenshot(page, 'settings-advanced')
 })
