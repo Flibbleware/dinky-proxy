@@ -3,13 +3,13 @@
   "private": true,
   "packageManager": "pnpm@11.6.0",
   "scripts": {
-    "dev": "cd apps/ui && pnpm dev",
+    "dev": "pnpm --filter ./apps/ui dev",
     "build": "pnpm clean && pnpm --filter ./apps/ui build && pnpm --filter ./apps/ui tauri:build && node scripts/collect-builds.js",
     "lint": "turbo run lint",
     "clean": "rimraf .turbo/cache dist apps/ui/dist apps/ui/src-tauri/target",
     "test:unit": "cargo test --manifest-path apps/ui/src-tauri/Cargo.toml",
     "test:e2e": "pnpm --filter dinkyproxy-ui exec playwright test",
-    "test:e2e:ui": "pnpm --filter dinkyproxy-ui exec playwright test --ui"
+    "test:e2e:ui": "pnpm test:e2e --ui"
   },
   "devDependencies": {
     "rimraf": "^6.1.3",
