@@ -89,7 +89,7 @@ const FieldError = ({ className, children, errors, ...props }: FieldErrorProps) 
       ) : (
         <ul className="ml-4 flex list-disc flex-col gap-1">
           {uniqueErrors.map(
-            (error, index) => error?.message && <li key={index}>{error.message}</li>,
+            (error) => error?.message && <li key={error.message}>{error.message}</li>,
           )}
         </ul>
       )
