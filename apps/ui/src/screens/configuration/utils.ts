@@ -25,17 +25,10 @@ export const createFieldHelper =
   }
 
 export const getFormDefaults = (
-  initialValues: Partial<ConfigurationFormValues>,
+  initialValues: ConfigurationFormValues,
 ): ConfigurationFormFields => ({
-  port: initialValues.port ?? 8888,
-  proxyProtocol: initialValues.proxyProtocol ?? 'http',
-  proxyHost: initialValues.proxyHost ?? '',
-  proxyPort: initialValues.proxyPort ?? 8080,
-  pacServerPort: initialValues.pacServerPort ?? 8000,
-  networkTarget: initialValues.networkTarget ?? 'Wi-Fi',
-  username: initialValues.username ?? '',
-  password: initialValues.password ?? '',
-  bypassList: (initialValues.bypassDomains ?? []).join('\n'),
+  ...initialValues,
+  bypassList: initialValues.bypassDomains.join('\n'),
 })
 
 const onSubmit = async (values: ConfigurationFormValues) => {

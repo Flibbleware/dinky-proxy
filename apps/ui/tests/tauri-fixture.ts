@@ -5,6 +5,15 @@ import { fileURLToPath } from 'url'
 import kill from 'tree-kill'
 import os from 'os'
 
+declare global {
+  interface Window {
+    __TAURI_INTERNALS__?: {
+      invoke?: (cmd: string, args?: Record<string, unknown>) => Promise<unknown>
+      [key: string]: unknown
+    }
+  }
+}
+
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
@@ -34,13 +43,36 @@ const killLeftoverTauri = async () => {
   })
 }
 
+const DEFAULT_CONFIG_STUB = {
+  port: 8888,
+  bypassDomains: [],
+  proxyProtocol: 'http',
+  proxyHost: '',
+  proxyPort: 8080,
+  pacServerPort: 8000,
+  networkTarget: 'Wi-Fi',
+  username: '',
+  password: '',
+}
+
 export const test = base.extend<
-  Record<never, never>,
+  { page: Page },
   {
     tauriProcess: ReturnType<typeof spawn>
     pageUrl: string
   }
 >({
+  page: async ({ page }, use) => {
+    await page.addInitScript((config) => {
+      window.__TAURI_INTERNALS__ = window.__TAURI_INTERNALS__ ?? {}
+      window.__TAURI_INTERNALS__.invoke = async (cmd) => {
+        if (cmd === 'load_config_command') return config
+        return null
+      }
+    }, DEFAULT_CONFIG_STUB)
+    await use(page)
+  },
+
   tauriProcess: [
     async ({}, use) => {
       const uiPath = path.resolve(__dirname, '..')

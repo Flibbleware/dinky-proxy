@@ -57,7 +57,7 @@ const Landing = () => {
           </div>
         </header>
 
-        {initialConfig !== undefined && <Configuration initialValues={initialConfig ?? {}} />}
+        {initialConfig != null && <Configuration initialValues={initialConfig} />}
       </div>
     </div>
   )
