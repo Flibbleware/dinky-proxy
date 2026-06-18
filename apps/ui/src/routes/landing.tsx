@@ -29,9 +29,7 @@ const loadConfig = async (): Promise<ConfigurationFormValues | null> => {
 }
 
 const Landing = () => {
-  const [initialConfig, setInitialConfig] = useState<ConfigurationFormValues | null | undefined>(
-    undefined,
-  )
+  const [initialConfig, setInitialConfig] = useState<ConfigurationFormValues | null>()
 
   useEffect(() => {
     const controller = new AbortController()
@@ -43,10 +41,6 @@ const Landing = () => {
 
     return () => controller.abort()
   }, [])
-
-  const handleSubmit = async (values: ConfigurationFormValues) => {
-    void invoke('save_config_command', { payload: values })
-  }
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-50">
@@ -63,9 +57,7 @@ const Landing = () => {
           </div>
         </header>
 
-        {initialConfig !== undefined && (
-          <Configuration initialValues={initialConfig ?? {}} onSubmit={handleSubmit} />
-        )}
+        {initialConfig !== undefined && <Configuration initialValues={initialConfig ?? {}} />}
       </div>
     </div>
   )
