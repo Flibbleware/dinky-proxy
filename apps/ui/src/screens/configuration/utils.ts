@@ -1,6 +1,6 @@
 import { toast } from 'sonner'
 import type { FieldPath, RegisterOptions, UseFormRegister } from 'react-hook-form'
-import { type ConfigurationFormFields, type ConfigurationFormValues } from './types'
+import { type ConfigurationFormRecord, type ConfigurationValues } from './types'
 import { configurationSchema } from './schema'
 import { invoke } from '@tauri-apps/api/core'
 
@@ -24,18 +24,16 @@ export const createFieldHelper =
     }
   }
 
-export const getFormDefaults = (
-  initialValues: ConfigurationFormValues,
-): ConfigurationFormFields => ({
+export const getFormDefaults = (initialValues: ConfigurationValues): ConfigurationFormRecord => ({
   ...initialValues,
   bypassList: initialValues.bypassDomains.join('\n'),
 })
 
-const onSubmit = async (values: ConfigurationFormValues) => {
+const onSubmit = async (values: ConfigurationValues) => {
   void invoke('save_config_command', { payload: values })
 }
 
-export const createHandleValidSubmit = async (values: ConfigurationFormFields) => {
+export const createHandleValidSubmit = async (values: ConfigurationFormRecord) => {
   const validated = configurationSchema.parse(values)
   const bypassDomains = validated.bypassList
     .split(/\r?\n/)

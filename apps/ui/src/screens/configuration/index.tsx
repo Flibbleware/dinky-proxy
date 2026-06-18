@@ -12,18 +12,18 @@ import {
 } from '@/components/controls/field'
 import { Input } from '@/components/controls/input'
 import { Textarea } from '@/components/controls/textarea'
-import { type ConfigurationFormFields, type ConfigurationFormValues } from './types'
+import { type ConfigurationFormRecord, type ConfigurationValues } from './types'
 import AdvancedConfigurationSection from './advanced-section'
 import { createFieldHelper, createHandleValidSubmit, getFormDefaults } from './utils'
 import { FormSection } from '@/components/forms/form-section'
 import { configurationSchema } from './schema'
 
 type Props = {
-  initialValues: ConfigurationFormValues
+  initialValues: ConfigurationValues
 }
 
 const Configuration = ({ initialValues }: Props) => {
-  const form = useForm<ConfigurationFormFields>({
+  const form = useForm<ConfigurationFormRecord>({
     resolver: zodResolver(configurationSchema),
     defaultValues: getFormDefaults(initialValues),
   })
@@ -45,7 +45,7 @@ const Configuration = ({ initialValues }: Props) => {
             <legend className="sr-only">Proxy settings</legend>
             <div className="grid grid-cols-[1fr_auto] items-start gap-3">
               <Field>
-                <FieldLabel<ConfigurationFormFields>
+                <FieldLabel<ConfigurationFormRecord>
                   htmlFor="proxyHost"
                   hint="The remote proxy hostname / IP address"
                 >
@@ -66,7 +66,7 @@ const Configuration = ({ initialValues }: Props) => {
               </Field>
 
               <Field className="w-28">
-                <FieldLabel<ConfigurationFormFields> htmlFor="proxyPort">Port</FieldLabel>
+                <FieldLabel<ConfigurationFormRecord> htmlFor="proxyPort">Port</FieldLabel>
                 <FieldContent>
                   <Input
                     {...createFieldProps('proxyPort', { valueAsNumber: true })}
@@ -85,7 +85,7 @@ const Configuration = ({ initialValues }: Props) => {
 
             <div className="grid grid-cols-2 items-start gap-3">
               <Field>
-                <FieldLabel<ConfigurationFormFields> htmlFor="username">Username</FieldLabel>
+                <FieldLabel<ConfigurationFormRecord> htmlFor="username">Username</FieldLabel>
                 <FieldContent>
                   <Input
                     {...createFieldProps('username')}
@@ -101,7 +101,7 @@ const Configuration = ({ initialValues }: Props) => {
               </Field>
 
               <Field>
-                <FieldLabel<ConfigurationFormFields>
+                <FieldLabel<ConfigurationFormRecord>
                   htmlFor="password"
                   hint="Stored securely in the keychain"
                 >
@@ -123,7 +123,7 @@ const Configuration = ({ initialValues }: Props) => {
             </div>
 
             <Field>
-              <FieldLabel<ConfigurationFormFields> htmlFor="bypassList">Domains</FieldLabel>
+              <FieldLabel<ConfigurationFormRecord> htmlFor="bypassList">Domains</FieldLabel>
               <FieldContent>
                 <Textarea
                   {...createFieldProps('bypassList', { describedBy: true })}

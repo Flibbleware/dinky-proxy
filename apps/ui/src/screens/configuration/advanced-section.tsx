@@ -1,14 +1,14 @@
 import { type FieldErrors } from 'react-hook-form'
 import { Field, FieldContent, FieldError, FieldLabel, FieldSet } from '@/components/controls/field'
 import { Input } from '@/components/controls/input'
-import { type ConfigurationFormFields } from './types'
+import { type ConfigurationFormRecord } from './types'
 import { Select, SelectOption } from '@/components/controls/select'
 import { FormSection } from '@/components/forms/form-section'
 import { createFieldHelper } from './utils'
 
 type AdvancedConfigurationSectionProps = {
-  field: ReturnType<typeof createFieldHelper<ConfigurationFormFields>>
-  errors: FieldErrors<ConfigurationFormFields>
+  field: ReturnType<typeof createFieldHelper<ConfigurationFormRecord>>
+  errors: FieldErrors<ConfigurationFormRecord>
 }
 
 const AdvancedConfigurationSection = ({ field, errors }: AdvancedConfigurationSectionProps) => (
@@ -19,7 +19,7 @@ const AdvancedConfigurationSection = ({ field, errors }: AdvancedConfigurationSe
         Advanced settings
       </h2>
       <Field>
-        <FieldLabel<ConfigurationFormFields>
+        <FieldLabel<ConfigurationFormRecord>
           htmlFor="proxyProtocol"
           hint="Choose the upstream proxy type. Credentials are used for both."
         >
@@ -38,7 +38,7 @@ const AdvancedConfigurationSection = ({ field, errors }: AdvancedConfigurationSe
       </Field>
       <div className="grid grid-cols-2 items-start gap-3">
         <Field>
-          <FieldLabel<ConfigurationFormFields>
+          <FieldLabel<ConfigurationFormRecord>
             htmlFor="port"
             hint="The port the local wrapper listens on (used in the PAC file)."
           >
@@ -57,7 +57,7 @@ const AdvancedConfigurationSection = ({ field, errors }: AdvancedConfigurationSe
         </Field>
 
         <Field>
-          <FieldLabel<ConfigurationFormFields>
+          <FieldLabel<ConfigurationFormRecord>
             htmlFor="pacServerPort"
             hint="The port serving the PAC file (http://localhost:<port>)."
           >
@@ -80,7 +80,7 @@ const AdvancedConfigurationSection = ({ field, errors }: AdvancedConfigurationSe
       </div>
 
       <Field>
-        <FieldLabel<ConfigurationFormFields>
+        <FieldLabel<ConfigurationFormRecord>
           htmlFor="networkTarget"
           hint="The network service name to apply proxy settings to (e.g. Wi-Fi)."
         >
