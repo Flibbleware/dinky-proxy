@@ -2,23 +2,15 @@ import { useEffect, useState } from 'react'
 import { invoke } from '@tauri-apps/api/core'
 import { createFileRoute } from '@tanstack/react-router'
 import Configuration from '../screens/configuration'
-import type { ConfigurationFormValues } from '@/screens/configuration/types'
+import type { ConfigurationValues } from '@/screens/configuration/types'
+import { isValidConfiguration } from '@/utils'
 
-const loadConfig = async (): Promise<ConfigurationFormValues | null> => {
+const loadConfig = async (): Promise<ConfigurationValues | null> => {
   try {
-    const config = (await invoke('load_config_command')) as ConfigurationFormValues
+    const config = await invoke('load_config_command')
 
-    if (
-      typeof config.port === 'number' &&
-      Array.isArray(config.bypassDomains) &&
-      typeof config.proxyHost === 'string' &&
-      typeof config.proxyPort === 'number' &&
-      typeof config.pacServerPort === 'number' &&
-      typeof config.networkTarget === 'string' &&
-      typeof config.username === 'string' &&
-      typeof config.password === 'string'
-    ) {
-      return config satisfies ConfigurationFormValues
+    if (isValidConfiguration(config)) {
+      return config
     }
 
     return null
@@ -29,9 +21,7 @@ const loadConfig = async (): Promise<ConfigurationFormValues | null> => {
 }
 
 const Landing = () => {
-  const [initialConfig, setInitialConfig] = useState<ConfigurationFormValues | null | undefined>(
-    undefined,
-  )
+  const [initialConfig, setInitialConfig] = useState<ConfigurationValues | null>()
 
   useEffect(() => {
     const controller = new AbortController()
@@ -43,10 +33,6 @@ const Landing = () => {
 
     return () => controller.abort()
   }, [])
-
-  const handleSubmit = async (values: ConfigurationFormValues) => {
-    void invoke('save_config_command', { payload: values })
-  }
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-50">
@@ -63,9 +49,7 @@ const Landing = () => {
           </div>
         </header>
 
-        {initialConfig !== undefined && (
-          <Configuration initialValues={initialConfig ?? {}} onSubmit={handleSubmit} />
-        )}
+        {initialConfig != null && <Configuration initialValues={initialConfig} />}
       </div>
     </div>
   )

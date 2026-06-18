@@ -1,9 +1,9 @@
 import { z } from 'zod'
 import type { configurationSchema, proxyProtocolSchema } from './schema'
 
-export type ConfigurationFormFields = z.input<typeof configurationSchema>
+export type ConfigurationFormRecord = z.input<typeof configurationSchema>
 
-export type ConfigurationFormValues = {
+export type ConfigurationValues = {
   port: number
   bypassDomains: string[]
   proxyProtocol: z.infer<typeof proxyProtocolSchema>
