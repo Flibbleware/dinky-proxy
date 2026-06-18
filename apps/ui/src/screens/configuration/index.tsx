@@ -18,12 +18,11 @@ import { createFieldHelper, createHandleValidSubmit, getFormDefaults } from './u
 import { FormSection } from '@/components/forms/form-section'
 import { configurationSchema } from './schema'
 
-export type ConfigurationFormProps = {
+type Props = {
   initialValues?: Partial<ConfigurationFormValues>
-  onSubmit?: (values: ConfigurationFormValues) => void | Promise<void>
 }
 
-const Configuration = ({ initialValues = {}, onSubmit }: ConfigurationFormProps) => {
+const Configuration = ({ initialValues = {} }: Props) => {
   const form = useForm<ConfigurationFormFields>({
     resolver: zodResolver(configurationSchema),
     defaultValues: getFormDefaults(initialValues),
@@ -39,10 +38,7 @@ const Configuration = ({ initialValues = {}, onSubmit }: ConfigurationFormProps)
   const [showAdvanced, setShowAdvanced] = useState(false)
 
   return (
-    <form
-      className="flex flex-col gap-6"
-      onSubmit={handleSubmit(createHandleValidSubmit(onSubmit))}
-    >
+    <form className="flex flex-col gap-6" onSubmit={handleSubmit(createHandleValidSubmit)}>
       <div className={`grid gap-5 ${showAdvanced ? 'md:grid-cols-2' : ''}`}>
         <FormSection>
           <FieldSet>
