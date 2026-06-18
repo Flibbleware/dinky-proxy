@@ -19,10 +19,10 @@ import { FormSection } from '@/components/forms/form-section'
 import { configurationSchema } from './schema'
 
 type Props = {
-  initialValues?: Partial<ConfigurationFormValues>
+  initialValues: ConfigurationFormValues
 }
 
-const Configuration = ({ initialValues = {} }: Props) => {
+const Configuration = ({ initialValues }: Props) => {
   const form = useForm<ConfigurationFormFields>({
     resolver: zodResolver(configurationSchema),
     defaultValues: getFormDefaults(initialValues),
