@@ -16,7 +16,7 @@ Installers: for now the apps are available via the [latest build action](https:/
 
 - **pnpm workspace**: one lockfile (`pnpm-lock.yaml`) and shared `node_modules`. Run `pnpm install` at the root.
 - **Tauri**: Rust backend and native shell wrapper. `pnpm dev` launches `tauri dev`, which boots Vite and the Rust process together.
-- **Turborepo**: still orchestrates shared scripts such as `pnpm lint`, but most day‑to‑day commands run from `apps/ui`.
+- **Turborepo**: still orchestrates shared scripts such as `pnpm lint`. All day‑to‑day commands can be run from the repo root using `pnpm --filter`.
 
 ## Prerequisites - Mac
 
@@ -44,7 +44,6 @@ Clone the repo and set your working directory:
 
 ```bash
 git clone <repo-url>
-cd dinky-proxy\
 pnpm dev # generate routeTree.gen.ts to fix TypeScript errors
 ```
 
@@ -68,21 +67,20 @@ pnpm lint
 ### Run React dev app only (Vite, no Tauri)
 
 ```bash
-cd apps/ui
-pnpm dev:vite
+pnpm --filter ./apps/ui dev:vite
 ```
 
 ### Formatting and linting
 
 ```bash
-cd apps/ui && pnpm format  # prettier (UI package only)
+pnpm --filter ./apps/ui format  # prettier (UI package only)
 pnpm lint                  # eslint across the workspace (Rust clippy/rustfmt run in CI)
 ```
 
 ### Dead code detection
 
 ```bash
-cd apps/ui && pnpm dead-code
+pnpm --filter ./apps/ui dead-code
 ```
 
 Runs [Fallow](https://docs.fallow.tools) to detect unused exports, unreachable files, and unlisted dependencies across the React app. The same check runs in the Frontend CI workflow.
