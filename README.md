@@ -2,9 +2,21 @@
 
 Lightweight proxy app built as a single Tauri application (React + TanStack Router on the frontend, Rust backend commands) inside a pnpm/Turborepo workspace.
 
-Installers: for now the apps are available via the [latest build action](https://github.com/Flibbleware/dinky-proxy/actions/workflows/build.yml), proper signed releases coming soon...
+Installers: for now the apps are available via the [latest build action](https://github.com/Flibbleware/dinky-proxy/actions/workflows/build.yml); proper signed releases are coming soon. Until then, see [Installing a downloaded build (macOS)](#installing-a-downloaded-build-macos) to get past the macOS "damaged" warning.
 
 <img width="753" height="577" alt="Screenshot 2026-06-17 at 18 36 22" src="https://github.com/user-attachments/assets/5c8257bf-0fc6-45ae-882f-8420e452a5d8" />
+
+## Installing a downloaded build (macOS)
+
+The macOS builds aren't code-signed or notarized yet, so when you download a `.dmg` your browser tags it with a quarantine flag and macOS shows **"DinkyProxy is damaged and can't be opened."** The app isn't actually damaged — Gatekeeper is just blocking an un-notarized download.
+
+To get past it, drag `DinkyProxy.app` into `/Applications`, then remove the quarantine flag (you only need to do this once per download):
+
+```bash
+xattr -cr /Applications/DinkyProxy.app
+```
+
+Then open the app normally.
 
 ## Monorepo layout
 
