@@ -110,7 +110,15 @@ pub fn get_config_path(app_handle: &AppHandle) -> Result<PathBuf> {
 
     std::fs::create_dir_all(&app_data_dir).context("Failed to create app data directory")?;
 
-    Ok(app_data_dir.join("config.enc"))
+    // Debug and release builds encrypt with different master keys (a hardcoded dev
+    // key vs. the keychain), so they must not share a config file — each would fail
+    // to decrypt the other's file. Keep them separate.
+    #[cfg(debug_assertions)]
+    let file_name = "config.dev.enc";
+    #[cfg(not(debug_assertions))]
+    let file_name = "config.enc";
+
+    Ok(app_data_dir.join(file_name))
 }
 
 pub fn encrypt_config(data: &AppConfigPayload, key: &str) -> Result<EncryptedConfigFile> {

@@ -25,6 +25,17 @@ pub fn get_or_create_master_key() -> Result<String> {
 
     #[cfg(not(debug_assertions))]
     {
+        use apple_native_keyring_store::keychain;
+
+        // keyring-core is backend-agnostic: a credential store must be registered
+        // as the default before any `Entry` can be used, otherwise every operation
+        // fails. Register the macOS login keychain store. (The `keychain` module is
+        // the correct one for desktop apps that are not signed with a provisioning
+        // profile; the `protected` store would fail with a missing-entitlement error.)
+        keyring_core::set_default_store(
+            keychain::Store::new().context("Failed to initialize keychain store")?,
+        );
+
         let entry = Entry::new(SERVICE_NAME, KEY_NAME).context("Failed to create keyring entry")?;
 
         match entry.get_password() {

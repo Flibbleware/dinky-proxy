@@ -1,34 +1,54 @@
 import { useEffect, useState } from 'react'
 import { invoke } from '@tauri-apps/api/core'
 import { createFileRoute } from '@tanstack/react-router'
+import { toast } from 'sonner'
 import Configuration from '../screens/configuration'
 import type { ConfigurationValues } from '@/screens/configuration/types'
 import { isValidConfiguration } from '@/utils'
 
-const loadConfig = async (): Promise<ConfigurationValues | null> => {
+const DEFAULT_CONFIG: ConfigurationValues = {
+  port: 8888,
+  bypassDomains: ['imgur.com'],
+  proxyProtocol: 'http',
+  proxyHost: '',
+  proxyPort: 8080,
+  pacServerPort: 8000,
+  networkTarget: 'Wi-Fi',
+  username: '',
+  password: '',
+}
+
+type LoadResult = { config: ConfigurationValues; recovered: boolean }
+
+const loadConfig = async (): Promise<LoadResult> => {
   try {
     const config = await invoke('load_config_command')
 
     if (isValidConfiguration(config)) {
-      return config
+      return { config, recovered: true }
     }
 
-    return null
+    return { config: DEFAULT_CONFIG, recovered: false }
   } catch (error) {
     console.error('Failed to load config', error)
-    return null
+    return { config: DEFAULT_CONFIG, recovered: false }
   }
 }
 
 const Landing = () => {
-  const [initialConfig, setInitialConfig] = useState<ConfigurationValues | null>()
+  const [initialConfig, setInitialConfig] = useState<ConfigurationValues>()
 
   useEffect(() => {
     const controller = new AbortController()
 
     void (async () => {
-      const result = await loadConfig()
-      if (!controller.signal.aborted) setInitialConfig(result)
+      const { config, recovered } = await loadConfig()
+      if (controller.signal.aborted) return
+
+      setInitialConfig(config)
+      if (!recovered) {
+        toast.warning("Couldn't load your saved configuration — starting with defaults.")
+      }
     })()
 
     return () => controller.abort()
