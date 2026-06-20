@@ -9,7 +9,27 @@ permissions:
   contents: read
 
 jobs:
+  check-version:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
+
+      - name: Verify tag matches Cargo.toml version
+        run: |
+          tag_version="${GITHUB_REF_NAME#v}"
+          cargo_version="$(sed -n 's/^version = "\(.*\)"/\1/p' apps/ui/src-tauri/Cargo.toml | head -n1)"
+          echo "Tag version:   $tag_version"
+          echo "Cargo version: $cargo_version"
+          if [ "$tag_version" != "$cargo_version" ]; then
+            echo "::error::Tag '$GITHUB_REF_NAME' does not match Cargo.toml version '$cargo_version'"
+            exit 1
+          fi
+
   build:
+    needs: check-version
     permissions:
       contents: read
     strategy:
