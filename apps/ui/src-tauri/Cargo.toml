@@ -1,6 +1,6 @@
 [package]
 name = "dinkyproxy-ui"
-version = "0.9.2"
+version = "0.9.3"
 description = "DinkyProxy - Proxy & PAC controller"
 authors = ["DinkyProxy"]
 license = "MIT"
