@@ -25,7 +25,7 @@ pub enum ProxyProtocol {
     Socks5,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct AppConfigPayload {
     pub port: u16,
@@ -38,6 +38,24 @@ pub struct AppConfigPayload {
     pub network_target: String,
     pub username: String,
     pub password: String,
+}
+
+// Hand-written so the stored password is never leaked through a `{:?}`.
+impl std::fmt::Debug for AppConfigPayload {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let mut d = f.debug_struct("AppConfigPayload");
+        d.field("port", &self.port)
+            .field("bypass_domains", &self.bypass_domains)
+            .field("proxy_protocol", &self.proxy_protocol)
+            .field("proxy_host", &self.proxy_host)
+            .field("proxy_port", &self.proxy_port)
+            .field("pac_server_port", &self.pac_server_port);
+        #[cfg(target_os = "macos")]
+        d.field("network_target", &self.network_target);
+        d.field("username", &self.username)
+            .field("password", &"<redacted>")
+            .finish()
+    }
 }
 
 impl Default for AppConfigPayload {
@@ -57,7 +75,7 @@ impl Default for AppConfigPayload {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 pub struct Config {
     pub proxy_host: String,
     pub proxy_port: u16,
@@ -68,6 +86,25 @@ pub struct Config {
     pub username: String,
     pub password: String,
     pub base_dir: PathBuf,
+}
+
+// Hand-written so the password is never leaked through a `{:?}`. `Config` is
+// cloned widely and held for the process lifetime, so a stray debug print would
+// be easy to introduce otherwise.
+impl std::fmt::Debug for Config {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("Config")
+            .field("proxy_host", &self.proxy_host)
+            .field("proxy_port", &self.proxy_port)
+            .field("proxy_protocol", &self.proxy_protocol)
+            .field("local_proxy_port", &self.local_proxy_port)
+            .field("pac_port", &self.pac_port)
+            .field("bypass_domains", &self.bypass_domains)
+            .field("username", &self.username)
+            .field("password", &"<redacted>")
+            .field("base_dir", &self.base_dir)
+            .finish()
+    }
 }
 
 impl Config {

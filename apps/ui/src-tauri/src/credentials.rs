@@ -2,10 +2,21 @@ use crate::config::Config;
 use anyhow::{bail, Result};
 use base64::{engine::general_purpose::STANDARD, Engine as _};
 
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 pub struct Credentials {
     pub username: String,
     pub password: String,
+}
+
+// Hand-written so the password can never be leaked through a `{:?}` in a log or
+// error chain. The derived `Debug` would print it verbatim.
+impl std::fmt::Debug for Credentials {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("Credentials")
+            .field("username", &self.username)
+            .field("password", &"<redacted>")
+            .finish()
+    }
 }
 
 pub fn load_credentials(config: &Config) -> Result<Credentials> {

@@ -40,6 +40,8 @@ is generated once and stored in the OS keychain/credential manager.
   `CONNECT`; any other status is relayed to the client and the connection closed.
 - Generated PAC values are validated to prevent JavaScript injection.
 - Config and PAC files are written `0600` (owner-only) on Unix.
+- The proxy credentials are redacted from debug output so they cannot be
+  accidentally logged through a struct's `Debug` formatting.
 - A restrictive Content Security Policy is applied to the webview.
 - Subprocess calls use argument arrays (no shell), so no command injection.
 
