@@ -8,6 +8,7 @@
     "dev:vite": "vite",
     "build": "tsc -b && vite build",
     "tauri:build": "tauri build",
+    "tauri:icons": "tauri icon src-tauri/icons/icon.png --output src-tauri/icons && rm -rf src-tauri/icons/ios src-tauri/icons/android",
     "lint": "eslint .",
     "format": "prettier --write .",
     "dead-code": "fallow dead-code"
