@@ -1,6 +1,5 @@
 {
   "productName": "DinkyProxy",
-  "version": "0.9.0",
   "identifier": "com.dinkyproxy.client",
   "build": {
     "beforeDevCommand": "pnpm vite",
