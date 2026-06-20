@@ -1,6 +1,6 @@
-# DinkyProxy (macOS / Windows)
+<img width="914" height="490" alt="Screenshot 2026-06-20 at 17 13 17" src="https://github.com/user-attachments/assets/9221150d-112c-4572-83bd-40d788044d2c" />
 
-Lightweight proxy app built as a single Tauri application (React + TanStack Router on the frontend, Rust backend commands) inside a pnpm/Turborepo workspace.
+Lightweight precision proxy app for macOS & Windows built as a single Tauri application (React + TanStack Router on the frontend, Rust backend commands) inside a pnpm/Turborepo workspace.
 
 Installers: download the latest macOS (`.dmg`) and Windows (`.msi` / `.exe`) builds from the [Releases page](https://github.com/Flibbleware/dinky-proxy/releases/latest). The builds are **not code-signed or notarized yet**, so on macOS see [Installing a downloaded build (macOS)](#installing-a-downloaded-build-macos) to get past the "damaged" warning.
 
