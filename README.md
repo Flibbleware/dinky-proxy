@@ -2,7 +2,7 @@
 
 Lightweight proxy app built as a single Tauri application (React + TanStack Router on the frontend, Rust backend commands) inside a pnpm/Turborepo workspace.
 
-Installers: for now the apps are available via the [latest build action](https://github.com/Flibbleware/dinky-proxy/actions/workflows/build.yml); proper signed releases are coming soon. Until then, see [Installing a downloaded build (macOS)](#installing-a-downloaded-build-macos) to get past the macOS "damaged" warning.
+Installers: download the latest macOS (`.dmg`) and Windows (`.msi` / `.exe`) builds from the [Releases page](https://github.com/Flibbleware/dinky-proxy/releases/latest). The builds are **not code-signed or notarized yet**, so on macOS see [Installing a downloaded build (macOS)](#installing-a-downloaded-build-macos) to get past the "damaged" warning.
 
 <img width="753" height="577" alt="Screenshot 2026-06-17 at 18 36 22" src="https://github.com/user-attachments/assets/5c8257bf-0fc6-45ae-882f-8420e452a5d8" />
 
@@ -149,6 +149,6 @@ Four workflows run automatically:
 | **Frontend** | Every PR and push to `main`                        | Runs ESLint, TypeScript type-check, Prettier format check, and Fallow dead code detection (`ubuntu-latest`)           |
 | **Backend**  | Every PR or push to `main` touching `src-tauri/**` | Runs Rust unit tests, Clippy lint, and rustfmt format check (`ubuntu-latest`)                                         |
 | **Tests**    | Every PR and push to `main`                        | Runs Playwright E2E tests (`macos-latest`)                                                                            |
-| **Build**    | Push to `main`                                     | Builds native installers on macOS (`.dmg`) and Windows (`.msi` / `.exe`) and uploads them as GitHub Actions artifacts |
+| **Build**    | Push of a `v*` tag (e.g. `v0.9.2`)                 | Verifies the tag matches the `Cargo.toml` version, builds native installers on macOS (`.dmg`) and Windows (`.msi` / `.exe`), and publishes them to a GitHub Release |
 
 Playwright screenshots, videos, and traces are uploaded as an artifact (`playwright-artifacts`) on every run, including failures.
