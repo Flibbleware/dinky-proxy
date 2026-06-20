@@ -4,6 +4,7 @@
 
 - Root: workspace manifests (`pnpm-workspace.yaml`, `turbo.json`), lockfile, and shared dotfiles.
 - `apps/ui`: Tauri application (Vite/React frontend + embedded Rust server code in `src-tauri/`).
+- `scripts/`: `release.sh` (version bump + tag) and `collect-builds.js` (copies build output into `dist/`).
 - Root also holds `proxy.pac`.
 
 ### Key concepts
@@ -117,6 +118,21 @@ pnpm test:e2e:update
 ```
 
 Commit the updated snapshots alongside the code change — if this is missed the CI step will block the PR.
+
+## Releasing
+
+```bash
+pnpm release <version>          # e.g. pnpm release 1.0.0
+pnpm release <version> --push   # bump, tag, and push to origin in one step
+```
+
+This script:
+1. Validates the working tree is clean and the tag doesn't already exist.
+2. Updates the version in `apps/ui/src-tauri/Cargo.toml` and syncs `Cargo.lock`.
+3. Creates a `chore: release vX.Y.Z` commit and a `vX.Y.Z` tag.
+4. Optionally pushes the commit and tag to origin (omit `--push` to inspect before pushing).
+
+Pushing the tag triggers the **Build** CI workflow, which builds the native installers and publishes them to a GitHub Release.
 
 ## CI (GitHub Actions)
 
