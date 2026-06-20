@@ -1,4 +1,4 @@
-<img width="914" height="490" alt="Screenshot 2026-06-20 at 17 13 17" src="https://github.com/user-attachments/assets/9221150d-112c-4572-83bd-40d788044d2c" />
+<img width="1058" height="492" alt="DinkyProxy app" src="https://github.com/user-attachments/assets/ec04d455-8305-4d0c-9120-321d3800cc5d" />
 
 Lightweight precision proxy app for macOS & Windows built as a single Tauri application (React + TanStack Router on the frontend, Rust backend commands) inside a pnpm/Turborepo workspace.
 
