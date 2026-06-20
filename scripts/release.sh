@@ -57,9 +57,12 @@ awk -v new="$VERSION" '
   { print }
 ' "$CARGO_TOML" > "$CARGO_TOML.tmp" && mv "$CARGO_TOML.tmp" "$CARGO_TOML"
 
+# Sync the lock file so it doesn't end up dirty after tagging
+cargo update --manifest-path "$CARGO_TOML" -p dinkyproxy-ui --precise "$VERSION"
+
 # ── Commit & tag ──────────────────────────────────────────────────────────────
 
-git add "$CARGO_TOML"
+git add "$CARGO_TOML" "apps/ui/src-tauri/Cargo.lock"
 git commit -m "chore: release $TAG"
 git tag "$TAG"
 
