@@ -29,8 +29,15 @@ is generated once and stored in the OS keychain/credential manager.
 ### Hardening in place
 
 - Loopback-only listeners (no network exposure).
-- Request line, header, and body size limits on the local proxy (DoS guard).
+- DoS guards on the local proxy and PAC servers: request-line, header, and body
+  size limits; timeouts on the request head and body reads; and a cap on the
+  number of concurrent connections.
 - Timeouts on all upstream connect/handshake operations.
+- Client request headers are validated (names must be valid tokens, values may
+  not contain control characters) so a client cannot smuggle an extra header
+  into the request forwarded to the upstream proxy.
+- The local proxy only opens a tunnel when the upstream returns a 2xx response to
+  `CONNECT`; any other status is relayed to the client and the connection closed.
 - Generated PAC values are validated to prevent JavaScript injection.
 - Config and PAC files are written `0600` (owner-only) on Unix.
 - A restrictive Content Security Policy is applied to the webview.
