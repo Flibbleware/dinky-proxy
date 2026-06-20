@@ -10,7 +10,8 @@
     "test:unit": "cargo test --manifest-path apps/ui/src-tauri/Cargo.toml",
     "test:e2e": "pnpm --filter dinkyproxy-ui exec playwright test",
     "test:e2e:ui": "pnpm test:e2e --ui",
-    "test:e2e:update": "pnpm test:e2e --update-snapshots"
+    "test:e2e:update": "pnpm test:e2e --update-snapshots",
+    "release": "bash scripts/release.sh"
   },
   "devDependencies": {
     "rimraf": "^6.1.3",
