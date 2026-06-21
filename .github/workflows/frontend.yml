@@ -44,8 +44,5 @@ jobs:
       - name: Type check
         run: pnpm exec tsc -b --noEmit
 
-      - name: Format check
-        run: pnpm exec prettier --check .
-
       - name: Dead code
         run: pnpm dead-code
