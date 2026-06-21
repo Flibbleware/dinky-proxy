@@ -23,7 +23,5 @@ export const configurationSchema = z.object({
   networkTarget: z.string().trim().min(1, 'Network service is required'),
   username: z.string().trim().min(1, 'Proxy username is required'),
   password: z.string().trim().min(1, 'Proxy password is required'),
-  // `.trim().min(1)` already rejects an all-whitespace value, which is the only way the
-  // newline-split list could come back empty, so no extra refinement is needed.
   bypassList: z.string().trim().min(1, 'Enter at least one domain'),
 })
