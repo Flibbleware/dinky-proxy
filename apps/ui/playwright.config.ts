@@ -23,6 +23,6 @@ export default defineConfig({
     actionTimeout: TIMEOUT,
     trace: 'on-first-retry',
     video: 'on-first-retry',
-    viewport: { width: 650, height: 680 },
+    viewport: { width: 620, height: 610 },
   },
 })

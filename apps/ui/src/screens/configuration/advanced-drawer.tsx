@@ -14,6 +14,7 @@ const AdvancedDrawer = ({ open, onClose, children }: Props) => (
       role="dialog"
       aria-modal="true"
       aria-labelledby="advanced-settings-heading"
+      aria-hidden={open ? undefined : true}
       onKeyDown={(e) => e.key === 'Escape' && onClose()}
       className={cn(
         'fixed inset-0 z-50 border-slate-800 border-b bg-slate-950 shadow-2xl transition-transform duration-300 ease-in-out',
