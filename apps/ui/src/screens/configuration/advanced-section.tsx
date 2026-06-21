@@ -6,12 +6,12 @@ import { FormSection } from '@/components/forms/form-section'
 import type { ConfigurationFormRecord } from './types'
 import type { createFieldHelper } from './utils'
 
-type AdvancedConfigurationSectionProps = {
+type Props = {
   field: ReturnType<typeof createFieldHelper<ConfigurationFormRecord>>
   errors: FieldErrors<ConfigurationFormRecord>
 }
 
-const AdvancedConfigurationSection = ({ field, errors }: AdvancedConfigurationSectionProps) => (
+const AdvancedConfigurationSection = ({ field, errors }: Props) => (
   <FormSection aria-labelledby="advanced-settings-heading">
     <FieldSet>
       <legend className="sr-only">Advanced proxy settings</legend>
