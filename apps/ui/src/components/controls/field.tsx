@@ -70,28 +70,11 @@ const FieldLabel = <TFieldValues extends Record<string, unknown> = Record<string
 )
 
 type FieldErrorProps = ComponentProps<'div'> & {
-  errors?: Array<{ message?: string } | undefined> | undefined
+  error?: { message?: string } | undefined
 }
 
-const FieldError = ({ className, children, errors, ...props }: FieldErrorProps) => {
-  if (!children && !errors?.length) return null
-
-  let content = children
-
-  if (!content) {
-    const uniqueErrors = [...new Map(errors?.map((e) => [e?.message, e]) ?? []).values()]
-    content =
-      uniqueErrors.length === 1 ? (
-        uniqueErrors[0]?.message
-      ) : (
-        <ul className="ml-4 flex list-disc flex-col gap-1">
-          {uniqueErrors.map(
-            (error) => error?.message && <li key={error.message}>{error.message}</li>,
-          )}
-        </ul>
-      )
-  }
-
+const FieldError = ({ className, children, error, ...props }: FieldErrorProps) => {
+  const content = children ?? error?.message
   if (!content) return null
 
   return (

@@ -1,6 +1,7 @@
 import { type KeyboardEvent, useState } from 'react'
 import { type Control, type FieldPath, type FieldValues, useController } from 'react-hook-form'
 import { cn } from '@/lib/utils'
+import { parseDomains, serializeDomains } from '@/screens/configuration/domains'
 import { DomainPillList } from './domain-pill-list'
 
 type Props<TFieldValues extends FieldValues> = {
@@ -19,12 +20,7 @@ const DomainPillInput = <TFieldValues extends FieldValues>({
   const { field, fieldState } = useController({ control, name })
   const [inputValue, setInputValue] = useState('')
 
-  const domains = field.value
-    ? String(field.value)
-        .split('\n')
-        .map((d) => d.trim())
-        .filter(Boolean)
-    : []
+  const domains = field.value ? parseDomains(String(field.value)) : []
 
   const addDomain = () => {
     const trimmed = inputValue.trim()
@@ -32,12 +28,12 @@ const DomainPillInput = <TFieldValues extends FieldValues>({
       setInputValue('')
       return
     }
-    field.onChange([...domains, trimmed].join('\n'))
+    field.onChange(serializeDomains([...domains, trimmed]))
     setInputValue('')
   }
 
   const removeDomain = (domain: string) => {
-    field.onChange(domains.filter((d) => d !== domain).join('\n'))
+    field.onChange(serializeDomains(domains.filter((d) => d !== domain)))
   }
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -51,7 +47,7 @@ const DomainPillInput = <TFieldValues extends FieldValues>({
     <div className="flex flex-col gap-3">
       <div
         className={cn(
-          'rounded-md border border-input bg-transparent transition-[border-color] has-[input:focus-visible]:border-emerald-300',
+          'rounded-md border border-input bg-transparent transition-[border-color] has-[input:focus-visible]:border-brand',
           fieldState.invalid && 'border-destructive',
         )}
       >

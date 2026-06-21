@@ -47,35 +47,34 @@ test('reveals field hint tooltips on focus', async ({ page, pageUrl }) => {
   await expect(page.getByRole('tooltip')).toHaveText('Stored securely in the keychain')
 })
 
-test('opens advanced settings in a drawer', async ({ page, pageUrl }) => {
+test('swaps the container to advanced settings', async ({ page, pageUrl }) => {
   await page.goto(pageUrl)
 
-  // Advanced fields should not be in view before the drawer opens.
-  await expect(page.getByLabel('Proxy protocol', { exact: true })).not.toBeInViewport()
-  await expect(page.getByLabel('Local Server port', { exact: true })).not.toBeInViewport()
-  await expect(page.getByLabel('PAC server port', { exact: true })).not.toBeInViewport()
-  await expect(page.getByLabel('Network service', { exact: true })).not.toBeInViewport()
+  // Basic fields are shown first; advanced fields are not rendered yet.
+  await expect(page.getByLabel('Host', { exact: true })).toBeVisible()
+  await expect(page.getByLabel('Proxy protocol', { exact: true })).not.toBeVisible()
 
   await page.getByRole('button', { name: 'Advanced settings' }).click()
 
-  const drawer = page.getByRole('dialog', { name: 'Advanced settings' })
-  await expect(drawer).toBeInViewport()
+  // Advanced fields replace the basic ones in the same container, and the toggle flips.
   await expect(page.getByLabel('Proxy protocol', { exact: true })).toBeVisible()
   await expect(page.getByLabel('Local Server port', { exact: true })).toBeVisible()
   await expect(page.getByLabel('PAC server port', { exact: true })).toBeVisible()
   await expect(page.getByLabel('Network service', { exact: true })).toBeVisible()
+  await expect(page.getByLabel('Host', { exact: true })).not.toBeVisible()
+  await expect(page.getByRole('button', { name: 'Basic settings' })).toBeVisible()
   await fullPageScreenshot(page, 'settings-advanced')
 })
 
-test('closes advanced settings drawer with the close button', async ({ page, pageUrl }) => {
+test('returns to basic settings with the toggle', async ({ page, pageUrl }) => {
   await page.goto(pageUrl)
 
   await page.getByRole('button', { name: 'Advanced settings' }).click()
-  const drawer = page.getByRole('dialog', { name: 'Advanced settings' })
-  await expect(drawer).toBeInViewport()
+  await expect(page.getByLabel('Proxy protocol', { exact: true })).toBeVisible()
 
-  await page.getByRole('button', { name: 'Close' }).click()
-  await expect(drawer).not.toBeInViewport()
+  await page.getByRole('button', { name: 'Basic settings' }).click()
+  await expect(page.getByLabel('Host', { exact: true })).toBeVisible()
+  await expect(page.getByLabel('Proxy protocol', { exact: true })).not.toBeVisible()
 })
 
 test('adds a domain as a pill on Enter', async ({ page, pageUrl }) => {
