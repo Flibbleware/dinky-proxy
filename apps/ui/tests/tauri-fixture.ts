@@ -75,7 +75,8 @@ export const test = base.extend<
   },
 
   tauriProcess: [
-    async (_, use) => {
+    // biome-ignore lint/correctness/noEmptyPattern: Playwright requires the first fixture arg to be an object-destructuring pattern, even when no fixtures are used
+    async ({}, use) => {
       const uiPath = path.resolve(__dirname, '..')
 
       const proc = spawn('pnpm', ['tauri', 'dev'], {
