@@ -32,8 +32,8 @@
 
 - VSCode rust-analyzer extension
 - VSCode Rust Syntax extension
-- VSCode Prettier extension
-- VSCode ESLint extension
+- VSCode Biome extension (formatting + linting)
+- VSCode ESLint extension (optional — surfaces the type-aware rules Biome can't run)
 
 ## Getting started
 
@@ -64,9 +64,11 @@ pnpm --filter ./apps/ui dev:vite
 ### Formatting and linting
 
 ```bash
-pnpm --filter ./apps/ui format  # prettier (UI package only)
-pnpm lint                       # eslint across the workspace (Rust clippy/rustfmt run in CI)
+pnpm --filter ./apps/ui format  # biome: format + safe lint fixes + import sort (UI package only)
+pnpm lint                       # biome check + eslint type-aware rules (Rust clippy/rustfmt run in CI)
 ```
+
+A Husky `pre-commit` hook runs [lint-staged](lint-staged.config.cjs) on staged files: `biome check --write` for `apps/ui` TS/CSS/JSON and `cargo fmt` for staged Rust. Commits are auto-formatted and blocked on unfixable Biome lint errors. The hooks install automatically via the `prepare` script on `pnpm install`.
 
 ### Dead code detection
 
@@ -140,7 +142,7 @@ Four workflows run automatically:
 
 | Workflow     | Trigger                                            | What it does                                                                                                          |
 | ------------ | -------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| **Frontend** | Every PR and push to `main`                        | Runs ESLint, TypeScript type-check, Prettier format check, and Fallow dead code detection (`ubuntu-latest`)           |
+| **Frontend** | Every PR and push to `main`                        | Runs Biome (format + lint) and ESLint type-aware rules, TypeScript type-check, and Fallow dead code detection (`ubuntu-latest`) |
 | **Backend**  | Every PR or push to `main` touching `src-tauri/**` | Runs Rust unit tests, Clippy lint, and rustfmt format check (`ubuntu-latest`)                                         |
 | **Tests**    | Every PR and push to `main`                        | Runs Playwright E2E tests (`macos-latest`)                                                                            |
 | **Build**    | Push of a `v*` tag (e.g. `v0.9.3`)                 | Verifies the tag matches the `Cargo.toml` version, builds native installers on macOS (`.dmg`) and Windows (`.msi` / `.exe`), and publishes them to a GitHub Release |

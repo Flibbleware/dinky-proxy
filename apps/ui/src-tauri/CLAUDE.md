@@ -8,7 +8,7 @@ Applies to the Tauri backend crate (`.rs` files in this directory).
 
 ## Formatting
 
-- After editing any `.rs` file, `cargo fmt` runs automatically via a PostToolUse hook in `.claude/settings.json`. No manual formatting step needed.
+- Formatting is handled by `cargo fmt`. A Husky `pre-commit` hook (lint-staged) runs `cargo fmt` on the crate when any `.rs` file is staged, so commits are auto-formatted — but edits are not formatted as you go. Run `cargo fmt --manifest-path apps/ui/src-tauri/Cargo.toml` to format manually before committing.
 
 ## Security
 
