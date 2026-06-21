@@ -2,7 +2,7 @@
 
 Lightweight precision proxy app for macOS & Windows.
 
-
+https://github.com/user-attachments/assets/7ea7d985-e4b9-41bd-bc1b-412937fc6f1b
 
 ## Download & Install
 
