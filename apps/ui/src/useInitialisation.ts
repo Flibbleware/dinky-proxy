@@ -1,8 +1,6 @@
 import { createContext, useContext } from 'react'
 import type { ConfigurationValues } from '@/screens/configuration/types'
 
-export type AppStatus = 'loading' | 'ready' | 'failed'
-
 type AppContextValueBase = {
   isTogglingServer: boolean
   setIsRunning: (value: boolean) => void
