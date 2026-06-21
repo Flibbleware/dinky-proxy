@@ -69,10 +69,6 @@ const FieldLabel = <TFieldValues extends Record<string, unknown> = Record<string
   </div>
 )
 
-const FieldDescription = ({ className, ...props }: ComponentProps<'p'>) => (
-  <p className={cn('text-slate-400 text-sm leading-snug', className)} {...props} />
-)
-
 type FieldErrorProps = ComponentProps<'div'> & {
   errors?: Array<{ message?: string } | undefined> | undefined
 }
@@ -105,4 +101,4 @@ const FieldError = ({ className, children, errors, ...props }: FieldErrorProps) 
   )
 }
 
-export { Field, FieldContent, FieldDescription, FieldError, FieldLabel, FieldSet }
+export { Field, FieldContent, FieldError, FieldLabel, FieldSet }
