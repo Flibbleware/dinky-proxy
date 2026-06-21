@@ -1,6 +1,6 @@
-import tseslint from 'typescript-eslint'
-import preferArrow from 'eslint-plugin-prefer-arrow'
 import { defineConfig, globalIgnores } from 'eslint/config'
+import preferArrow from 'eslint-plugin-prefer-arrow'
+import tseslint from 'typescript-eslint'
 
 export default defineConfig([
   globalIgnores([

@@ -11,7 +11,7 @@
           },
           {
             "type": "command",
-            "command": "jq -r '.tool_input.file_path // empty' | { read -r FILE; echo \"$FILE\" | grep -qE 'apps/ui/.*\\.tsx?$' && (cd apps/ui && node_modules/.bin/biome format --write \"$FILE\" 2>/dev/null) || true; }",
+            "command": "jq -r '.tool_input.file_path // empty' | { read -r FILE; echo \"$FILE\" | grep -qE 'apps/ui/.*\\.(tsx?|css)$' && (cd apps/ui && node_modules/.bin/biome format --write \"$FILE\" 2>/dev/null) || true; }",
             "statusMessage": "Formatting TypeScript..."
           }
         ]

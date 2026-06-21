@@ -6,12 +6,13 @@ type State = {
 
 const AppError = ({ error, reset }: { error: Error; reset?: () => void }) => (
   <div className="flex min-h-screen flex-col items-center justify-center gap-4 p-8 text-center">
-    <h1 className="text-xl font-semibold">Something went wrong</h1>
-    <p className="text-muted-foreground max-w-md text-sm">{error.message}</p>
+    <h1 className="font-semibold text-xl">Something went wrong</h1>
+    <p className="max-w-md text-muted-foreground text-sm">{error.message}</p>
     {reset && (
       <button
+        type="button"
         onClick={reset}
-        className="bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:ring-ring/50 rounded-md px-4 py-2 text-sm font-medium outline-none focus-visible:ring-[3px]"
+        className="rounded-md bg-primary px-4 py-2 font-medium text-primary-foreground text-sm outline-none hover:bg-primary/90 focus-visible:ring-[3px] focus-visible:ring-ring/50"
       >
         Try again
       </button>
@@ -38,4 +39,4 @@ class ErrorBoundary extends Component<PropsWithChildren, State> {
   }
 }
 
-export { ErrorBoundary, AppError }
+export { AppError, ErrorBoundary }

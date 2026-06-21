@@ -1,8 +1,8 @@
-import { useFormState, useWatch, type Control } from 'react-hook-form'
-import { useInitialisation } from '@/useInitialisation'
+import { type Control, useFormState, useWatch } from 'react-hook-form'
 import { Button } from '@/components/controls/button'
-import { type ConfigurationFormRecord } from './types'
+import { useInitialisation } from '@/useInitialisation'
 import { configurationSchema } from './schema'
+import type { ConfigurationFormRecord } from './types'
 
 type Props = {
   showAdvanced: boolean
@@ -30,7 +30,7 @@ const ConfigurationActions = ({ showAdvanced, onToggleAdvanced, control }: Props
         onClick={onToggleAdvanced}
         aria-expanded={showAdvanced}
         aria-controls="advanced-settings"
-        className="focus-visible:ring-ring/50 rounded-sm text-xs text-slate-400 transition-colors outline-none hover:text-slate-200 focus-visible:ring-[3px]"
+        className="rounded-sm text-slate-400 text-xs outline-none transition-colors hover:text-slate-200 focus-visible:ring-[3px] focus-visible:ring-ring/50"
       >
         {showAdvanced ? 'Hide advanced settings' : 'Show advanced settings'}
       </button>
