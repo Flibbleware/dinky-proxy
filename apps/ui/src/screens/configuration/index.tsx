@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Button } from '@/components/controls/button'
+import ConfigurationActions from './actions'
 import {
   Field,
   FieldContent,
@@ -31,14 +31,17 @@ const Configuration = ({ initialValues }: Props) => {
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting, isDirty },
+    formState: { errors },
   } = form
 
   const createFieldProps = createFieldHelper(register)
   const [showAdvanced, setShowAdvanced] = useState(false)
 
   return (
-    <form className="flex flex-col gap-6" onSubmit={handleSubmit(createHandleValidSubmit)}>
+    <form
+      className="flex flex-col gap-6"
+      onSubmit={handleSubmit(createHandleValidSubmit(form.reset))}
+    >
       <div className={`grid gap-5 ${showAdvanced ? 'md:grid-cols-2' : ''}`}>
         <FormSection>
           <FieldSet>
@@ -91,6 +94,7 @@ const Configuration = ({ initialValues }: Props) => {
                     {...createFieldProps('username')}
                     type="text"
                     autoComplete="off"
+                    spellCheck={false}
                     aria-invalid={!!errors.username}
                   />
                   <FieldError
@@ -150,20 +154,11 @@ const Configuration = ({ initialValues }: Props) => {
         )}
       </div>
 
-      <div className="flex items-center justify-between gap-3">
-        <button
-          type="button"
-          onClick={() => setShowAdvanced((v) => !v)}
-          aria-expanded={showAdvanced}
-          aria-controls="advanced-settings"
-          className="focus-visible:ring-ring/50 rounded-sm text-xs text-slate-400 transition-colors outline-none hover:text-slate-200 focus-visible:ring-[3px]"
-        >
-          {showAdvanced ? 'Hide advanced settings' : 'Show advanced settings'}
-        </button>
-        <Button type="submit" disabled={isSubmitting || !isDirty}>
-          {isSubmitting ? 'Saving...' : 'Save configuration'}
-        </Button>
-      </div>
+      <ConfigurationActions
+        showAdvanced={showAdvanced}
+        onToggleAdvanced={() => setShowAdvanced((v) => !v)}
+        control={form.control}
+      />
     </form>
   )
 }
