@@ -33,11 +33,6 @@ const Configuration = ({ initialValues }: Props) => {
       className="flex flex-col gap-6"
       onSubmit={handleSubmit(createHandleValidSubmit(form.reset))}
     >
-      {/* The basic and advanced fields swap in place within the same container. Hidden
-          fields are unmounted, but react-hook-form retains their values, so toggling back
-          and forth (and submitting) preserves everything either side. The min-height
-          reserves room for the taller (basic) view so the card and footer don't shift
-          when the shorter advanced view loads in. */}
       <FormSection id="configuration-fields" className="min-h-[324px]">
         {showAdvanced ? (
           <AdvancedConfigurationSection field={createFieldProps} errors={errors} />

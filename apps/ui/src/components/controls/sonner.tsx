@@ -7,8 +7,6 @@ import {
 } from 'lucide-react'
 import { Toaster as Sonner, type ToasterProps } from 'sonner'
 
-// The app is hard-coded to a dark theme (see index.css), so the toaster matches directly
-// rather than reading from a theme provider that was never mounted.
 const Toaster = (props: ToasterProps) => (
   <Sonner
     theme="dark"
