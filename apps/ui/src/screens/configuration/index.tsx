@@ -12,6 +12,7 @@ import {
 import { Input } from '@/components/controls/input'
 import { Textarea } from '@/components/controls/textarea'
 import { FormSection } from '@/components/forms/form-section'
+import { cn } from '@/lib/utils'
 import ConfigurationActions from './actions'
 import AdvancedConfigurationSection from './advanced-section'
 import { configurationSchema } from './schema'
@@ -42,7 +43,7 @@ const Configuration = ({ initialValues }: Props) => {
       className="flex flex-col gap-6"
       onSubmit={handleSubmit(createHandleValidSubmit(form.reset))}
     >
-      <div className={`grid gap-5 ${showAdvanced ? 'md:grid-cols-2' : ''}`}>
+      <div className={cn('grid gap-5', showAdvanced && 'md:grid-cols-2')}>
         <FormSection>
           <FieldSet>
             <legend className="sr-only">Proxy settings</legend>
