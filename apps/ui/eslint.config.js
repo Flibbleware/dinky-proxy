@@ -54,6 +54,7 @@ export default defineConfig([
           classPropertiesAllowed: false,
         },
       ],
+      '@typescript-eslint/no-non-null-assertion': 'error',
       '@typescript-eslint/no-floating-promises': 'error',
       '@typescript-eslint/no-unnecessary-condition': 'error',
       '@typescript-eslint/switch-exhaustiveness-check': 'error',

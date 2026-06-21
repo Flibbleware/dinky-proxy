@@ -3,14 +3,31 @@ import type { ConfigurationValues } from '@/screens/configuration/types'
 
 export type AppStatus = 'loading' | 'ready' | 'failed'
 
-export type AppContextValue = {
-  status: AppStatus
-  config: ConfigurationValues
-  isRunning: boolean | null
+type AppContextValueBase = {
   isTogglingServer: boolean
   setIsRunning: (value: boolean) => void
   toggleServer: () => Promise<void>
 }
+
+type AppContextValueLoading = {
+  status: 'loading'
+  config: ConfigurationValues | null
+  isRunning: null
+} & AppContextValueBase
+
+type AppContextValueReady = {
+  status: 'ready'
+  config: ConfigurationValues
+  isRunning: boolean
+} & AppContextValueBase
+
+type AppContextValueFailed = {
+  status: 'failed'
+  config: null
+  isRunning: null
+} & AppContextValueBase
+
+export type AppContextValue = AppContextValueLoading | AppContextValueReady | AppContextValueFailed
 
 export const AppContext = createContext<AppContextValue | null>(null)
 

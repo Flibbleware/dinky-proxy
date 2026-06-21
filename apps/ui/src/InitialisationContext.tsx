@@ -1,26 +1,14 @@
 import { useEffect, useState, type PropsWithChildren } from 'react'
 import { toast } from 'sonner'
 import { isServerRunning, loadConfig, startServer, stopServer } from '@/commands'
-import { isValidConfiguration } from '@/utils'
-import type { ConfigurationValues } from '@/screens/configuration/types'
-import { AppContext, type AppStatus } from './useInitialisation'
+import { AppContext, type AppContextValue } from './useInitialisation'
 
-const DEFAULT_CONFIG: ConfigurationValues = {
-  port: 8888,
-  bypassDomains: ['imgur.com'],
-  proxyProtocol: 'http',
-  proxyHost: '',
-  proxyPort: 8080,
-  pacServerPort: 8000,
-  networkTarget: 'Wi-Fi',
-  username: '',
-  password: '',
-}
+type LoadState = Pick<AppContextValue, 'status' | 'config' | 'isRunning'>
+
+const INITIAL_STATE: LoadState = { status: 'loading', config: null, isRunning: null }
 
 export const InitialisationProvider = ({ children }: PropsWithChildren) => {
-  const [status, setStatus] = useState<AppStatus>('loading')
-  const [config, setConfig] = useState<ConfigurationValues>(DEFAULT_CONFIG)
-  const [isRunning, setIsRunning] = useState<boolean | null>(null)
+  const [loadState, setLoadState] = useState<LoadState>(INITIAL_STATE)
   const [isTogglingServer, setIsTogglingServer] = useState(false)
 
   useEffect(() => {
@@ -28,29 +16,24 @@ export const InitialisationProvider = ({ children }: PropsWithChildren) => {
 
     void (async () => {
       try {
-        const [rawConfig, running] = await Promise.all([loadConfig(), isServerRunning()])
+        const [config, isRunning] = await Promise.all([loadConfig(), isServerRunning()])
         if (controller.signal.aborted) return
-
-        if (isValidConfiguration(rawConfig)) {
-          setConfig(rawConfig)
-        } else {
-          toast.warning("Couldn't load your saved configuration — starting with defaults.")
-        }
-
-        setIsRunning(running)
-        setStatus('ready')
+        setLoadState({ status: 'ready', config, isRunning })
       } catch {
         if (controller.signal.aborted) return
-        setStatus('failed')
+        setLoadState({ status: 'failed', config: null, isRunning: null })
       }
     })()
 
     return () => controller.abort()
   }, [])
 
+  const setIsRunning = (value: boolean) =>
+    setLoadState((prev) => (prev.status === 'ready' ? { ...prev, isRunning: value } : prev))
+
   const toggleServer = async () => {
-    if (isRunning === null) return
-    const stopping = isRunning
+    if (loadState.status !== 'ready') return
+    const stopping = loadState.isRunning
     setIsTogglingServer(true)
     try {
       if (stopping) {
@@ -72,7 +55,9 @@ export const InitialisationProvider = ({ children }: PropsWithChildren) => {
   }
 
   return (
-    <AppContext value={{ status, config, isRunning, isTogglingServer, setIsRunning, toggleServer }}>
+    <AppContext
+      value={{ ...loadState, isTogglingServer, setIsRunning, toggleServer } as AppContextValue}
+    >
       {children}
     </AppContext>
   )
