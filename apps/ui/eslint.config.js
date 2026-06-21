@@ -1,11 +1,5 @@
-import js from '@eslint/js'
-import globals from 'globals'
-import reactHooks from 'eslint-plugin-react-hooks'
-import reactRefresh from 'eslint-plugin-react-refresh'
 import tseslint from 'typescript-eslint'
 import preferArrow from 'eslint-plugin-prefer-arrow'
-import react from 'eslint-plugin-react'
-import jsxA11y from 'eslint-plugin-jsx-a11y'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
@@ -14,30 +8,20 @@ export default defineConfig([
     'build',
     'src-tauri',
     'tests/tauri-fixture.{js,ts}',
-    // Generated files
     'src/routeTree.gen.ts',
-    // Caches / tooling artifacts
     '.turbo',
     '.vite',
     '.tanstack',
   ]),
   {
-    files: ['**/*.{ts,tsx,js}'],
-    extends: [
-      js.configs.recommended,
-      tseslint.configs.recommended,
-      reactHooks.configs.flat.recommended,
-      reactRefresh.configs.vite,
-      jsxA11y.flatConfigs.recommended,
-    ],
+    files: ['**/*.{ts,tsx}'],
+    // base = parser + @typescript-eslint plugin, zero rules enabled.
+    // Biome owns everything syntactic; ESLint only does type-aware work.
+    extends: [tseslint.configs.base],
     plugins: {
       'prefer-arrow': preferArrow,
-      react,
     },
     languageOptions: {
-      ecmaVersion: 'latest',
-      globals: globals.browser,
-      sourceType: 'module',
       parserOptions: {
         projectService: {
           allowDefaultProject: ['*.js'],
@@ -46,6 +30,7 @@ export default defineConfig([
       },
     },
     rules: {
+      // Not in Biome: forces declarations -> arrow functions
       'prefer-arrow/prefer-arrow-functions': [
         'error',
         {
@@ -54,13 +39,10 @@ export default defineConfig([
           classPropertiesAllowed: false,
         },
       ],
-      '@typescript-eslint/no-non-null-assertion': 'error',
+      // Type-aware: require the real tsc checker, no Biome equivalent
       '@typescript-eslint/no-floating-promises': 'error',
       '@typescript-eslint/no-unnecessary-condition': 'error',
       '@typescript-eslint/switch-exhaustiveness-check': 'error',
-      'react/no-array-index-key': 'error',
-      'react/jsx-no-useless-fragment': 'error',
-      'react/self-closing-comp': 'error',
     },
   },
 ])
