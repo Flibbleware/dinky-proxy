@@ -1,32 +1,21 @@
 import type { FieldPath, RegisterOptions, UseFormRegister } from 'react-hook-form'
 import { toast } from 'sonner'
 import { saveConfig } from '@/commands'
+import { parseDomains, serializeDomains } from './domains'
 import { configurationSchema } from './schema'
 import type { ConfigurationFormRecord, ConfigurationValues } from './types'
 
 export const createFieldHelper =
   <TFieldValues extends Record<string, unknown>>(register: UseFormRegister<TFieldValues>) =>
-  <T extends FieldPath<TFieldValues>>(
-    name: T,
-    options?: RegisterOptions<TFieldValues, T> & { describedBy?: boolean },
-  ) => {
-    // Only reference the description element for fields that actually render one,
-    // otherwise aria-describedby points at an id that never exists.
-    const { describedBy, ...registerOptions } = options ?? {}
-    const describedByIds = [describedBy ? `${name}-description` : undefined, `${name}-error`]
-      .filter(Boolean)
-      .join(' ')
-
-    return {
-      id: name,
-      'aria-describedby': describedByIds,
-      ...register(name, registerOptions),
-    }
-  }
+  <T extends FieldPath<TFieldValues>>(name: T, options?: RegisterOptions<TFieldValues, T>) => ({
+    id: name,
+    'aria-describedby': `${name}-error`,
+    ...register(name, options),
+  })
 
 export const getFormDefaults = (initialValues: ConfigurationValues): ConfigurationFormRecord => ({
   ...initialValues,
-  bypassList: initialValues.bypassDomains.join('\n'),
+  bypassList: serializeDomains(initialValues.bypassDomains),
 })
 
 const onSubmit = async (values: ConfigurationValues) => {
@@ -36,10 +25,7 @@ const onSubmit = async (values: ConfigurationValues) => {
 export const createHandleValidSubmit =
   (reset: (values: ConfigurationFormRecord) => void) => async (values: ConfigurationFormRecord) => {
     const validated = configurationSchema.parse(values)
-    const bypassDomains = validated.bypassList
-      .split(/\r?\n/)
-      .map((line) => line.trim())
-      .filter(Boolean)
+    const bypassDomains = parseDomains(validated.bypassList)
 
     try {
       await onSubmit({

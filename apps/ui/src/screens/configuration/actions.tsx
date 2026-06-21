@@ -25,15 +25,9 @@ const ConfigurationActions = ({ showAdvanced, onToggleAdvanced, control }: Props
 
   return (
     <div className="flex items-center justify-between gap-3">
-      <button
-        type="button"
-        onClick={onToggleAdvanced}
-        aria-expanded={showAdvanced}
-        aria-controls="advanced-settings"
-        className="rounded-sm text-slate-400 text-xs outline-none transition-colors hover:text-slate-200 focus-visible:ring-[3px] focus-visible:ring-ring/50"
-      >
-        {showAdvanced ? 'Hide advanced settings' : 'Show advanced settings'}
-      </button>
+      <Button type="button" onClick={onToggleAdvanced} aria-controls="configuration-fields">
+        {showAdvanced ? 'Basic settings' : 'Advanced settings'}
+      </Button>
       <div className="flex items-center gap-3">
         <Button
           type="button"
