@@ -67,6 +67,7 @@ export const test = base.extend<
       window.__TAURI_INTERNALS__ = window.__TAURI_INTERNALS__ ?? {}
       window.__TAURI_INTERNALS__.invoke = async (cmd) => {
         if (cmd === 'load_config_command') return config
+        if (cmd === 'is_server_running_command') return false
         return null
       }
     }, DEFAULT_CONFIG_STUB)
