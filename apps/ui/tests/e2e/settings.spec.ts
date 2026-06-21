@@ -47,17 +47,6 @@ test('reveals field hint tooltips on focus', async ({ page, pageUrl }) => {
   await expect(page.getByRole('tooltip')).toHaveText('Stored securely in the keychain')
 })
 
-test('shows the domains hint as inline helper text', async ({ page, pageUrl }) => {
-  await page.goto(pageUrl)
-
-  const hint = page.getByText('Separate each domain with a new line')
-  await expect(hint).toBeVisible()
-  await expect(page.getByLabel('Domains')).toHaveAttribute(
-    'aria-describedby',
-    /bypassList-description/,
-  )
-})
-
 test('toggles advanced settings', async ({ page, pageUrl }) => {
   await page.goto(pageUrl)
 

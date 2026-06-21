@@ -1,16 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import {
-  Field,
-  FieldContent,
-  FieldDescription,
-  FieldError,
-  FieldLabel,
-  FieldSet,
-} from '@/components/controls/field'
+import { DomainPillInput } from '@/components/controls/domain-pill-input'
+import { Field, FieldContent, FieldError, FieldLabel, FieldSet } from '@/components/controls/field'
 import { Input } from '@/components/controls/input'
-import { Textarea } from '@/components/controls/textarea'
 import { FormSection } from '@/components/forms/form-section'
 import { cn } from '@/lib/utils'
 import ConfigurationActions from './actions'
@@ -130,19 +123,15 @@ const Configuration = ({ initialValues }: Props) => {
             <Field>
               <FieldLabel<ConfigurationFormRecord> htmlFor="bypassList">Domains</FieldLabel>
               <FieldContent>
-                <Textarea
-                  {...createFieldProps('bypassList', { describedBy: true })}
-                  rows={5}
-                  placeholder="localhost&#10;*.internal.company&#10;example.com"
-                  aria-invalid={!!errors.bypassList}
+                <DomainPillInput
+                  control={form.control}
+                  name="bypassList"
+                  aria-describedby="bypassList-error"
                 />
                 <FieldError
                   id="bypassList-error"
                   errors={errors.bypassList ? [errors.bypassList] : undefined}
                 />
-                <FieldDescription id="bypassList-description">
-                  Separate each domain with a new line
-                </FieldDescription>
               </FieldContent>
             </Field>
           </FieldSet>
