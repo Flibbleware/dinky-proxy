@@ -2,7 +2,7 @@
 
 ## Formatting
 
-- After editing any `.ts` or `.tsx` file, `prettier` runs automatically via a PostToolUse hook in `.claude/settings.json`. No manual formatting step needed.
+- Formatting and safe lint fixes are handled by Biome. A Husky `pre-commit` hook (lint-staged) runs `biome check --write` on staged files, so commits are auto-formatted — but edits are not formatted as you go. Run `pnpm --filter ./apps/ui format` to format manually before committing, or rely on the editor's format-on-save (Biome VSCode extension).
 
 Applies to `.ts` / `.tsx` source files in this app.
 

@@ -1,8 +1,8 @@
-import { toast } from 'sonner'
 import type { FieldPath, RegisterOptions, UseFormRegister } from 'react-hook-form'
-import { type ConfigurationFormRecord, type ConfigurationValues } from './types'
-import { configurationSchema } from './schema'
+import { toast } from 'sonner'
 import { saveConfig } from '@/commands'
+import { configurationSchema } from './schema'
+import type { ConfigurationFormRecord, ConfigurationValues } from './types'
 
 export const createFieldHelper =
   <TFieldValues extends Record<string, unknown>>(register: UseFormRegister<TFieldValues>) =>

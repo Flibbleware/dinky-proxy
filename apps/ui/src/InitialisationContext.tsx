@@ -1,4 +1,4 @@
-import { useEffect, useState, type PropsWithChildren } from 'react'
+import { type PropsWithChildren, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { isServerRunning, loadConfig, startServer, stopServer } from '@/commands'
 import { AppContext, type AppContextValue } from './useInitialisation'

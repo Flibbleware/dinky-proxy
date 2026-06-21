@@ -1,9 +1,9 @@
+import { spawn } from 'node:child_process'
+import os from 'node:os'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { test as base, expect, type Page } from '@playwright/test'
-import { spawn } from 'child_process'
-import path from 'path'
-import { fileURLToPath } from 'url'
 import kill from 'tree-kill'
-import os from 'os'
 
 declare global {
   interface Window {
@@ -75,6 +75,7 @@ export const test = base.extend<
   },
 
   tauriProcess: [
+    // biome-ignore lint/correctness/noEmptyPattern: Playwright requires the first fixture arg to be an object-destructuring pattern, even when no fixtures are used
     async ({}, use) => {
       const uiPath = path.resolve(__dirname, '..')
 

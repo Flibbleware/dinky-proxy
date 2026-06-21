@@ -1,18 +1,19 @@
-import type { ComponentProps } from 'react'
 import { CircleHelp } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import type { ComponentProps } from 'react'
 import { Label } from '@/components/controls/label'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/controls/tooltip'
+import { cn } from '@/lib/utils'
 
 const FieldSet = ({ className, ...props }: ComponentProps<'fieldset'>) => (
   <fieldset className={cn('flex flex-col gap-6', className)} {...props} />
 )
 
 const Field = ({ className, ...props }: ComponentProps<'div'>) => (
+  // biome-ignore lint/a11y/useSemanticElements: generic field layout primitive; a <fieldset> would nest inside FieldSet and force block styling
   <div
     role="group"
     className={cn(
-      'group/field data-[invalid=true]:text-destructive flex w-full gap-3',
+      'group/field flex w-full gap-3 data-[invalid=true]:text-destructive',
       'flex-col [&>*]:w-full [&>.sr-only]:w-auto',
       className,
     )}
@@ -55,7 +56,7 @@ const FieldLabel = <TFieldValues extends Record<string, unknown> = Record<string
       <Tooltip>
         <TooltipTrigger
           type="button"
-          className="focus-visible:ring-ring/50 cursor-pointer rounded-full text-slate-500 outline-none hover:text-slate-300 focus-visible:text-slate-300 focus-visible:ring-[3px]"
+          className="cursor-pointer rounded-full text-slate-500 outline-none hover:text-slate-300 focus-visible:text-slate-300 focus-visible:ring-[3px] focus-visible:ring-ring/50"
           aria-label={
             typeof children === 'string' ? `More information about ${children}` : 'More information'
           }
@@ -69,7 +70,7 @@ const FieldLabel = <TFieldValues extends Record<string, unknown> = Record<string
 )
 
 const FieldDescription = ({ className, ...props }: ComponentProps<'p'>) => (
-  <p className={cn('text-sm leading-snug text-slate-400', className)} {...props} />
+  <p className={cn('text-slate-400 text-sm leading-snug', className)} {...props} />
 )
 
 type FieldErrorProps = ComponentProps<'div'> & {
@@ -98,10 +99,10 @@ const FieldError = ({ className, children, errors, ...props }: FieldErrorProps) 
   if (!content) return null
 
   return (
-    <div role="alert" className={cn('text-destructive text-sm font-normal', className)} {...props}>
+    <div role="alert" className={cn('font-normal text-destructive text-sm', className)} {...props}>
       {content}
     </div>
   )
 }
 
-export { Field, FieldLabel, FieldError, FieldSet, FieldContent, FieldDescription }
+export { Field, FieldContent, FieldDescription, FieldError, FieldLabel, FieldSet }

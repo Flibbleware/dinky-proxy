@@ -1,10 +1,10 @@
-import { type FieldErrors } from 'react-hook-form'
+import type { FieldErrors } from 'react-hook-form'
 import { Field, FieldContent, FieldError, FieldLabel, FieldSet } from '@/components/controls/field'
 import { Input } from '@/components/controls/input'
-import { type ConfigurationFormRecord } from './types'
 import { Select, SelectOption } from '@/components/controls/select'
 import { FormSection } from '@/components/forms/form-section'
-import { createFieldHelper } from './utils'
+import type { ConfigurationFormRecord } from './types'
+import type { createFieldHelper } from './utils'
 
 type AdvancedConfigurationSectionProps = {
   field: ReturnType<typeof createFieldHelper<ConfigurationFormRecord>>

@@ -1,7 +1,6 @@
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import ConfigurationActions from './actions'
 import {
   Field,
   FieldContent,
@@ -12,11 +11,12 @@ import {
 } from '@/components/controls/field'
 import { Input } from '@/components/controls/input'
 import { Textarea } from '@/components/controls/textarea'
-import { type ConfigurationFormRecord, type ConfigurationValues } from './types'
-import AdvancedConfigurationSection from './advanced-section'
-import { createFieldHelper, createHandleValidSubmit, getFormDefaults } from './utils'
 import { FormSection } from '@/components/forms/form-section'
+import ConfigurationActions from './actions'
+import AdvancedConfigurationSection from './advanced-section'
 import { configurationSchema } from './schema'
+import type { ConfigurationFormRecord, ConfigurationValues } from './types'
+import { createFieldHelper, createHandleValidSubmit, getFormDefaults } from './utils'
 
 type Props = {
   initialValues: ConfigurationValues

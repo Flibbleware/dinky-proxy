@@ -1,4 +1,4 @@
-import { test, expect, fullPageScreenshot } from '../tauri-fixture'
+import { expect, fullPageScreenshot, test } from '../tauri-fixture'
 
 test('loads the settings page', async ({ page, pageUrl }) => {
   await page.goto(pageUrl)
