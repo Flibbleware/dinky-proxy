@@ -34,7 +34,7 @@ const AdvancedDrawer = ({ open, onClose, children }: Props) => (
             </div>
           </div>
           {children}
-          <div className="mt-6">
+          <div className="mt-5">
             <Button type="button" onClick={onClose}>
               Close
             </Button>
