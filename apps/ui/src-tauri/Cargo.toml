@@ -27,7 +27,7 @@ tokio = { version = "1.37", features = [
     "fs",
 ] }
 aes-gcm = "0.10"
-sha2 = "0.10"
+sha2 = "0.11"
 base64 = "0.22"
 url = "2.5"
 keyring-core = "1.0"
