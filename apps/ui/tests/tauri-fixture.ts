@@ -50,7 +50,6 @@ const DEFAULT_CONFIG_STUB = {
   proxyHost: '',
   proxyPort: 8080,
   pacServerPort: 8000,
-  networkTarget: 'Wi-Fi',
   username: '',
   password: '',
 }

@@ -10,7 +10,6 @@ export type ConfigurationValues = {
   proxyHost: string
   proxyPort: number
   pacServerPort: number
-  networkTarget: string
   username: string
   password: string
 }

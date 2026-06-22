@@ -35,11 +35,10 @@ export const createHandleValidSubmit =
         proxyHost: validated.proxyHost,
         proxyPort: validated.proxyPort,
         pacServerPort: validated.pacServerPort,
-        networkTarget: validated.networkTarget,
         username: validated.username,
         password: validated.password,
       })
-      toast.success('Configuration saved')
+      toast.success('Configuration Saved')
       reset(values)
     } catch (error) {
       console.error('Failed to save configuration', error)

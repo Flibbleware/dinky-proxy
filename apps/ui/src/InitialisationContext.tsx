@@ -39,13 +39,13 @@ export const InitialisationProvider = ({ children }: PropsWithChildren) => {
       if (stopping) {
         await stopServer()
         setIsRunning(false)
-        toast.success('Server stopped')
+        toast.success('Proxy Disabled')
         return
       }
 
       await startServer()
       setIsRunning(true)
-      toast.success('Server started')
+      toast.success('Proxy Enabled')
     } catch (error) {
       console.error('Failed to toggle server', error)
       toast.error(stopping ? 'Failed to stop server' : 'Failed to start server')
