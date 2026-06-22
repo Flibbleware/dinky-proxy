@@ -32,17 +32,6 @@ const waitForVite = async (url: string, timeout = 45000) => {
   throw new Error('Vite server did not start in time')
 }
 
-const killLeftoverTauri = async () => {
-  const processName = os.platform() === 'win32' ? 'dinkyproxy-ui.exe' : 'dinkyproxy-ui'
-
-  const cmd =
-    os.platform() === 'win32' ? `taskkill /F /IM ${processName}` : `pkill -f ${processName}`
-
-  await new Promise((resolve) => {
-    spawn(cmd, { shell: true }).on('close', resolve)
-  })
-}
-
 const DEFAULT_CONFIG_STUB = {
   port: 8888,
   bypassDomains: [],
@@ -78,12 +67,8 @@ export const test = base.extend<
     async ({}, use) => {
       const uiPath = path.resolve(__dirname, '..')
 
-      const proc = spawn('pnpm', ['tauri', 'dev'], {
+      const proc = spawn('pnpm', ['dev:vite'], {
         cwd: uiPath,
-        env: {
-          ...process.env,
-          TAURI_DEV_WATCHER: 'false',
-        },
         shell: os.platform() === 'win32',
         detached: true,
         stdio: 'pipe',
@@ -91,9 +76,10 @@ export const test = base.extend<
 
       await use(proc)
 
-      if (proc.pid) kill(proc.pid, 'SIGKILL')
-
-      await killLeftoverTauri()
+      await new Promise<void>((resolve) => {
+        if (proc.pid) kill(proc.pid, 'SIGKILL', () => resolve())
+        else resolve()
+      })
     },
     { scope: 'worker' },
   ],
