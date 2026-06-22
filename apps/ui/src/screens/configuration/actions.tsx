@@ -10,10 +10,9 @@ type Props = {
   control: Control<ConfigurationFormRecord>
 }
 
-const serverLabel = (isRunning: boolean | null, isTogglingServer: boolean): string => {
+const serverLabel = (isRunning: boolean | null): string => {
   if (isRunning === null) return 'Loading...'
-  if (isTogglingServer) return isRunning ? 'Stopping...' : 'Starting...'
-  return isRunning ? 'Stop server' : 'Start server'
+  return isRunning ? 'Disable' : 'Enable'
 }
 
 const ConfigurationActions = ({ showAdvanced, onToggleAdvanced, control }: Props) => {
@@ -26,7 +25,7 @@ const ConfigurationActions = ({ showAdvanced, onToggleAdvanced, control }: Props
   return (
     <div className="flex items-center justify-between gap-3">
       <Button type="button" onClick={onToggleAdvanced} aria-controls="configuration-fields">
-        {showAdvanced ? 'Basic settings' : 'Advanced settings'}
+        {showAdvanced ? 'Basic' : 'Advanced'}
       </Button>
       <div className="flex items-center gap-3">
         <Button
@@ -35,10 +34,10 @@ const ConfigurationActions = ({ showAdvanced, onToggleAdvanced, control }: Props
           disabled={isRunning === null || isTogglingServer || !isFormValid}
           className={isRunning ? 'bg-red-800 hover:bg-red-700' : ''}
         >
-          {serverLabel(isRunning, isTogglingServer)}
+          {serverLabel(isRunning)}
         </Button>
         <Button type="submit" disabled={isSubmitting || !isDirty}>
-          {isSubmitting ? 'Saving...' : 'Save configuration'}
+          {isSubmitting ? 'Saving...' : 'Save Configuration'}
         </Button>
       </div>
     </div>

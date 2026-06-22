@@ -18,7 +18,7 @@ const AdvancedConfigurationSection = ({ field, errors }: Props) => (
         htmlFor="proxyProtocol"
         hint="Choose the upstream proxy type. Credentials are used for both."
       >
-        Proxy protocol
+        Protocol
       </FieldLabel>
       <FieldContent>
         <Select {...field('proxyProtocol')} aria-invalid={!!errors.proxyProtocol}>
@@ -34,7 +34,7 @@ const AdvancedConfigurationSection = ({ field, errors }: Props) => (
           htmlFor="port"
           hint="The port the local wrapper listens on (used in the PAC file)."
         >
-          Local Server port
+          Local Server Port
         </FieldLabel>
         <FieldContent>
           <Input
@@ -53,7 +53,7 @@ const AdvancedConfigurationSection = ({ field, errors }: Props) => (
           htmlFor="pacServerPort"
           hint="The port serving the PAC file (http://localhost:<port>)."
         >
-          PAC server port
+          PAC Server Port
         </FieldLabel>
         <FieldContent>
           <Input
@@ -67,24 +67,6 @@ const AdvancedConfigurationSection = ({ field, errors }: Props) => (
         </FieldContent>
       </Field>
     </div>
-
-    <Field>
-      <FieldLabel<ConfigurationFormRecord>
-        htmlFor="networkTarget"
-        hint="The network service name to apply proxy settings to (e.g. Wi-Fi)."
-      >
-        Network service
-      </FieldLabel>
-      <FieldContent>
-        <Input
-          {...field('networkTarget')}
-          type="text"
-          autoComplete="off"
-          aria-invalid={!!errors.networkTarget}
-        />
-        <FieldError id="networkTarget-error" error={errors.networkTarget} />
-      </FieldContent>
-    </Field>
   </FieldSet>
 )
 
