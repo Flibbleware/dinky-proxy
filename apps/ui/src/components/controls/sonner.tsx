@@ -5,6 +5,7 @@ import {
   OctagonXIcon,
   TriangleAlertIcon,
 } from 'lucide-react'
+import type { CSSProperties } from 'react'
 import { Toaster as Sonner, type ToasterProps } from 'sonner'
 
 const Toaster = (props: ToasterProps) => (
@@ -12,6 +13,7 @@ const Toaster = (props: ToasterProps) => (
     theme="dark"
     position="top-right"
     className="toaster group"
+    style={{ '--width': 'max-content' } as CSSProperties}
     icons={{
       success: <CircleCheckIcon className="size-4" />,
       info: <InfoIcon className="size-4" />,

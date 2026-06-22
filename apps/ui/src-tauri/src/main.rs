@@ -76,7 +76,7 @@ fn main() {
             }
 
             // Create system tray menu
-            let menu = tray::build_tray_menu(app.handle(), "Start Server")?;
+            let menu = tray::build_tray_menu(app.handle(), "Enable")?;
 
             // Create system tray icon
             let icon = tray::get_app_icon(false);

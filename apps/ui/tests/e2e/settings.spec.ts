@@ -26,7 +26,7 @@ test('shows validation error for empty required field', async ({ page, pageUrl }
   // Save stays disabled until the form is dirty, so edit another field to enable submit
   // while leaving the required Host empty.
   await page.getByLabel('Port', { exact: true }).fill('8081')
-  await page.getByRole('button', { name: 'Save configuration' }).click()
+  await page.getByRole('button', { name: 'Save Configuration' }).click()
 
   await expect(page.getByText('Proxy host is required')).toBeVisible()
   await expect(proxyHost).toHaveAttribute('aria-invalid', 'true')
@@ -52,29 +52,28 @@ test('swaps the container to advanced settings', async ({ page, pageUrl }) => {
 
   // Basic fields are shown first; advanced fields are not rendered yet.
   await expect(page.getByLabel('Host', { exact: true })).toBeVisible()
-  await expect(page.getByLabel('Proxy protocol', { exact: true })).not.toBeVisible()
+  await expect(page.getByLabel('Protocol', { exact: true })).not.toBeVisible()
 
-  await page.getByRole('button', { name: 'Advanced settings' }).click()
+  await page.getByRole('button', { name: 'Advanced' }).click()
 
   // Advanced fields replace the basic ones in the same container, and the toggle flips.
-  await expect(page.getByLabel('Proxy protocol', { exact: true })).toBeVisible()
-  await expect(page.getByLabel('Local Server port', { exact: true })).toBeVisible()
-  await expect(page.getByLabel('PAC server port', { exact: true })).toBeVisible()
-  await expect(page.getByLabel('Network service', { exact: true })).toBeVisible()
+  await expect(page.getByLabel('Protocol', { exact: true })).toBeVisible()
+  await expect(page.getByLabel('Local Server Port', { exact: true })).toBeVisible()
+  await expect(page.getByLabel('PAC Server Port', { exact: true })).toBeVisible()
   await expect(page.getByLabel('Host', { exact: true })).not.toBeVisible()
-  await expect(page.getByRole('button', { name: 'Basic settings' })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Basic' })).toBeVisible()
   await fullPageScreenshot(page, 'settings-advanced')
 })
 
 test('returns to basic settings with the toggle', async ({ page, pageUrl }) => {
   await page.goto(pageUrl)
 
-  await page.getByRole('button', { name: 'Advanced settings' }).click()
-  await expect(page.getByLabel('Proxy protocol', { exact: true })).toBeVisible()
+  await page.getByRole('button', { name: 'Advanced' }).click()
+  await expect(page.getByLabel('Protocol', { exact: true })).toBeVisible()
 
-  await page.getByRole('button', { name: 'Basic settings' }).click()
+  await page.getByRole('button', { name: 'Basic' }).click()
   await expect(page.getByLabel('Host', { exact: true })).toBeVisible()
-  await expect(page.getByLabel('Proxy protocol', { exact: true })).not.toBeVisible()
+  await expect(page.getByLabel('Protocol', { exact: true })).not.toBeVisible()
 })
 
 test('adds a domain as a pill on Enter', async ({ page, pageUrl }) => {

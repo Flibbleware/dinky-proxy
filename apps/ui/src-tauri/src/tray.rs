@@ -13,15 +13,15 @@ pub(crate) fn build_tray_menu(
     let menu = Menu::new(app)?;
     menu.append(&MenuItem::with_id(
         app,
-        "configuration",
-        "Configuration",
+        "toggle_server",
+        toggle_text,
         true,
         None::<&str>,
     )?)?;
     menu.append(&MenuItem::with_id(
         app,
-        "toggle_server",
-        toggle_text,
+        "configuration",
+        "Settings",
         true,
         None::<&str>,
     )?)?;
@@ -63,11 +63,7 @@ pub async fn update_tray_state(app: &AppHandle) {
     // Recreate the menu with updated text
     let server_manager = app.state::<ServerManager>();
     let is_running = server_manager.is_running().await;
-    let text = if is_running {
-        "Stop Server"
-    } else {
-        "Start Server"
-    };
+    let text = if is_running { "Disable" } else { "Enable" };
 
     // Get the tray by ID and update its menu
     if let Some(tray) = app.tray_by_id("main-tray") {
