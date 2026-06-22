@@ -42,14 +42,11 @@ impl ServerManager {
             }
         }
 
-        let mut handles_guard = self.handles.lock().await;
-
-        if handles_guard.is_some() {
-            println!("[ServerManager] Start called but servers are already running");
-            return Ok(()); // Already running
-        }
-
         println!("[ServerManager] Starting proxy and PAC servers...");
+
+        // if misconfigured handle without holding the `handles` lock so
+        // concurrent status checks, stops, and config saves stay responsive
+        // instead of serializing behind it and freezing the UI.
 
         // Load config
         let config_payload = crate::config::load_config(&app_handle, &master_key)
@@ -72,6 +69,15 @@ impl ServerManager {
         test_proxy_auth(&config, &credentials)
             .await
             .context("Proxy authentication failed")?;
+
+        // take the lock to register and spawn the servers. Re-check that
+        // nothing started while we were preparing above.
+        let mut handles_guard = self.handles.lock().await;
+
+        if handles_guard.is_some() {
+            println!("[ServerManager] Start called but servers are already running");
+            return Ok(()); // Already running
+        }
 
         // Start servers
         let config_clone = config.clone();
