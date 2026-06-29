@@ -41,7 +41,7 @@
     "@vitejs/plugin-react-swc": "^4.3.1",
     "eslint": "^10.5.0",
     "eslint-plugin-prefer-arrow": "^1.2.3",
-    "fallow": "^2.96.0",
+    "fallow": "^2.101.0",
     "tailwindcss": "^4.3.1",
     "tree-kill": "^1.2.2",
     "typescript": "^6.0.3",
