@@ -27,8 +27,8 @@ importers:
         specifier: ^5.4.0
         version: 5.4.0(react-hook-form@7.79.0(react@19.2.7))
       '@radix-ui/react-label':
-        specifier: ^2.1.9
-        version: 2.1.9(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+        specifier: ^2.1.10
+        version: 2.1.10(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@radix-ui/react-tooltip':
         specifier: ^1.2.9
         version: 1.2.10(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
@@ -67,8 +67,8 @@ importers:
         specifier: ^2.0.0
         version: 2.5.0
       '@playwright/test':
-        specifier: 1.60.0
-        version: 1.60.0
+        specifier: 1.61.0
+        version: 1.61.0
       '@tailwindcss/vite':
         specifier: ^4.3.1
         version: 4.3.1(vite@8.0.16(@types/node@24.13.2)(jiti@2.7.0)(yaml@2.9.0))
@@ -100,8 +100,8 @@ importers:
         specifier: ^1.2.3
         version: 1.2.3(eslint@10.5.0(jiti@2.7.0))
       fallow:
-        specifier: ^2.96.0
-        version: 2.96.0
+        specifier: ^2.101.0
+        version: 2.101.0
       tailwindcss:
         specifier: ^4.3.1
         version: 4.3.1
@@ -283,43 +283,43 @@ packages:
     resolution: {integrity: sha512-+CNAzxglkrpNf/kKywqQfk74QjtceuOE7Qm+AF8miRvPF/wmmK5+OJOgVh3AVTT3RP2mH3+FOaxlE5v72owk0A==}
     engines: {node: ^20.19.0 || ^22.13.0 || >=24}
 
-  '@fallow-cli/darwin-arm64@2.96.0':
-    resolution: {integrity: sha512-y5zqGloIyeDnLXtrmCDSaANK+jrEXIR9an3UokkIhtCvztq2/Oi4ha2kWgBuNDQhrT8dk9tXTYX/+lBV9a7Yhg==}
+  '@fallow-cli/darwin-arm64@2.101.0':
+    resolution: {integrity: sha512-LUdT8IGU0v/c9/N1hq6HrrCGUtwKFNw2NrZBx/TS1nsqt/EfrDAhRBYm4nE1y7O/p47WlCcHHcEq7O0F4Tb5tA==}
     cpu: [arm64]
     os: [darwin]
 
-  '@fallow-cli/darwin-x64@2.96.0':
-    resolution: {integrity: sha512-ofN1Y4MoGV2bO19j0p7REZBdflZJ7oSAAel8DOQkrcoAqa5rEu2iJAFO0u9I0gSDxQG/g++GawojPK2jWsGz7Q==}
+  '@fallow-cli/darwin-x64@2.101.0':
+    resolution: {integrity: sha512-W8uM2xbnVioP6GpUGbSV1aGZUC8Ru3D4a1JSkSOZoPvS4K7CWWZte0KaGe35FYOkR+g4DLvfkjrjLcMEpi+3OQ==}
     cpu: [x64]
     os: [darwin]
 
-  '@fallow-cli/linux-arm64-gnu@2.96.0':
-    resolution: {integrity: sha512-GlHpuXQhrK/BpDLV2GahGHSL+LawzufDLGfFujdrLCsOsCHggqWr0T3NR6fuzHgapel/nhtjBRzWJSYAMz0PLg==}
+  '@fallow-cli/linux-arm64-gnu@2.101.0':
+    resolution: {integrity: sha512-KUsm8EAjuLVi5TUb5K/ADyLXLe5gGQnOpU/4u8nnzxJmaiAWamibnkwFlKdHx88NMVIpOG/VQ1zVyS8HRv2zNQ==}
     cpu: [arm64]
     os: [linux]
 
-  '@fallow-cli/linux-arm64-musl@2.96.0':
-    resolution: {integrity: sha512-EAKnmAxvALNiSomznrT/UwGOSI3B/V2ISFoJFaIOcd+K2tVr9rbxNyv40gPWgzECWukiDn+u+vWMO+ul7fpd4A==}
+  '@fallow-cli/linux-arm64-musl@2.101.0':
+    resolution: {integrity: sha512-AJKZl4YP2p/9xpPo31fAzLO95HrBAbiQD+nYzQ6AlibZV2J41teswD/dVBXW+togR9qME0pMhx0UdESRoQ2hAw==}
     cpu: [arm64]
     os: [linux]
 
-  '@fallow-cli/linux-x64-gnu@2.96.0':
-    resolution: {integrity: sha512-gobVZ9J1rhPanZyPkVHT0T9SmPHgC+C46IPPcjdjC0C655X7pAGV6CysVjvIBAo+pAIcUWVvkD5DiDa1OFYwgw==}
+  '@fallow-cli/linux-x64-gnu@2.101.0':
+    resolution: {integrity: sha512-Q3VPCUGtEkrDRujrrmNI64L7F7EuE845eRMYNI23DuFOyif3VaprLRAAjcDShZnbaoaOkc5ToJBYuo6V30ntkQ==}
     cpu: [x64]
     os: [linux]
 
-  '@fallow-cli/linux-x64-musl@2.96.0':
-    resolution: {integrity: sha512-SjeU14V5SYUhXzYjKOVo2oijpxYSbMxKoiKzeiKNK+hmMGC7SoCPruP9jD8IdsTr1NmgR+MdkKafxuGmWBvWKw==}
+  '@fallow-cli/linux-x64-musl@2.101.0':
+    resolution: {integrity: sha512-VQIBVwm4afBUCkpAOH5I2QoikFONkWOmC/u8pePElKv8Oy/GYv8K0Lz2stNU3s/+u17LYUKVLcmiIgoV3F4hyA==}
     cpu: [x64]
     os: [linux]
 
-  '@fallow-cli/win32-arm64-msvc@2.96.0':
-    resolution: {integrity: sha512-KL6Xf/J/XPOhK0VfIURFYCyJ11tfa4pn6+HzKc8hKa4DucwJlvpO+Pk4937hEQgCkLC/HmCzZWPn3rE7WiIvNQ==}
+  '@fallow-cli/win32-arm64-msvc@2.101.0':
+    resolution: {integrity: sha512-JVdh1GCxYXB5Pglx4Z/XY28lMJXNpMsas40q01sIm9TK/wTDN28+sF754c17IyV4wwH4iews9hCc2VnKj9Mg3Q==}
     cpu: [arm64]
     os: [win32]
 
-  '@fallow-cli/win32-x64-msvc@2.96.0':
-    resolution: {integrity: sha512-WXrNyYxqW4A1jMAZuMLInGuzL4E35kQlaDfLtGqkbC3vbbq36eMPmdoXuK8trtllqg0NA8Cd+KYQwN8xA8zzNA==}
+  '@fallow-cli/win32-x64-msvc@2.101.0':
+    resolution: {integrity: sha512-AH4PTlTGeaYsiGIBJhuKIYt10ErkgTXBiIKkVCggHLxjmV4E/f9/AYC2YTwRXO8DtZngCIfH1BAzwrL+SmESQQ==}
     cpu: [x64]
     os: [win32]
 
@@ -388,8 +388,8 @@ packages:
   '@oxc-project/types@0.133.0':
     resolution: {integrity: sha512-KzkdCd6Uxqnf6l3HOw1xfatAlUURA0g14cvBYFyJ5SaNOQbOUvBr9PKArcPcrNIeRsBdgcUzOGrhKveVpvOIGA==}
 
-  '@playwright/test@1.60.0':
-    resolution: {integrity: sha512-O71yZIbAh/PxDMNGns37GHBIfrVkEVyn+AXyIa5dOTfb4/xNvRWV+Vv/NMbNCtODB/pO7vLlF2OTmMVLhmr7Ag==}
+  '@playwright/test@1.61.0':
+    resolution: {integrity: sha512-cKA5B6lpFEMyMGjxF54QihfYpB4FkEGH+qZhtArDEG+wezQAJY8Pq6C7T1SjWz+FFzt3TbyoXBQYk/0292TdJA==}
     engines: {node: '>=18'}
     hasBin: true
 
@@ -449,8 +449,8 @@ packages:
       '@types/react':
         optional: true
 
-  '@radix-ui/react-label@2.1.9':
-    resolution: {integrity: sha512-rDoTeMbCwRVcnmo7NGT9IlPo1yXmEI+xc1URP3oeewwZEV4mdTp1dYUhYbQdo4D1q2SjKVvv4N1gNY77QAQtjA==}
+  '@radix-ui/react-label@2.1.10':
+    resolution: {integrity: sha512-ib0zvq2ZsAqKm5tRnqGJn3vOxSgIts5ToxsXT0q1S/GfLD1Zj7UOEnkw8u2w6sRmn47djpQWuSU1DCL1R29/yw==}
     peerDependencies:
       '@types/react': '*'
       '@types/react-dom': '*'
@@ -501,19 +501,6 @@ packages:
       '@types/react-dom':
         optional: true
 
-  '@radix-ui/react-primitive@2.1.5':
-    resolution: {integrity: sha512-zifXeB8Y88qCYx8PLZ5oQb32KwZub+s925mMoZsBBq9KUQqWKkREubTfs6ASjRPPBe7Jt9O8OHH89+95VG+grA==}
-    peerDependencies:
-      '@types/react': '*'
-      '@types/react-dom': '*'
-      react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
-      react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
-    peerDependenciesMeta:
-      '@types/react':
-        optional: true
-      '@types/react-dom':
-        optional: true
-
   '@radix-ui/react-primitive@2.1.6':
     resolution: {integrity: sha512-wetd0QI77DbvrPpTAvH1SqOxsYF2wZe5TNxqwOd5Ty4XDpV3dpV0s8K/1MGMJBeY5o7lg8ub5VIt1Ub+yVen6g==}
     peerDependencies:
@@ -525,15 +512,6 @@ packages:
       '@types/react':
         optional: true
       '@types/react-dom':
-        optional: true
-
-  '@radix-ui/react-slot@1.2.5':
-    resolution: {integrity: sha512-rCMO3QsIVKv5JTY5CVbo2MvO77SpEqqYc8AvRE7OWqRDOIqAKjsp+DrmnY9uc8NPdxB5E2z47HTYGeE2+NTptg==}
-    peerDependencies:
-      '@types/react': '*'
-      react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
-    peerDependenciesMeta:
-      '@types/react':
         optional: true
 
   '@radix-ui/react-slot@1.3.0':
@@ -1380,8 +1358,8 @@ packages:
   eventemitter3@5.0.4:
     resolution: {integrity: sha512-mlsTRyGaPBjPedk6Bvw+aqbsXDtoAyAzm5MO7JgU+yVRyMQ5O8bD4Kcci7BS85f93veegeCPkL8R4GLClnjLFw==}
 
-  fallow@2.96.0:
-    resolution: {integrity: sha512-fNEj+b/LUVXwfyxZPnr+SJjdQHCKjUbWgluW/wC7Q5kcJENHNEJtmFDgpHEqKY6gY257xRCgyg1AlSC8YQgROA==}
+  fallow@2.101.0:
+    resolution: {integrity: sha512-7N1tBOD2EuomFhPNyTJl4PgcWNlrvz7hy8kfvbNBlFbt62byF8mDzAZ5x+GrjDVmetLjNerMeOojpwEy3GRJ5g==}
     engines: {node: '>=16'}
     hasBin: true
 
@@ -1698,13 +1676,13 @@ packages:
     resolution: {integrity: sha512-QP88BAKvMam/3NxH6vj2o21R6MjxZUAd6nlwAS/pnGvN9IVLocLHxGYIzFhg6fUQ+5th6P4dv4eW9jX3DSIj7A==}
     engines: {node: '>=12'}
 
-  playwright-core@1.60.0:
-    resolution: {integrity: sha512-9bW6zvX/m0lEbgTKJ6YppOKx8H3VOPBMOCFh2irXFOT4BbHgrx5hPjwJYLT40Lu+4qtD36qKc/Hn56StUW57IA==}
+  playwright-core@1.61.0:
+    resolution: {integrity: sha512-caX7TrY3Ml6egyDX0WUcTHDxodl/b51y5wJOdCEA36QviK/s2g081hvmGs8eaE3DWb6NYZQ6BjO/QkNRPenoPA==}
     engines: {node: '>=18'}
     hasBin: true
 
-  playwright@1.60.0:
-    resolution: {integrity: sha512-hheHdokM8cdqCb0lcE3s+zT4t4W+vvjpGxsZlDnikarzx8tSzMebh3UiFtgqwFwnTnjYQcsyMF8ei2mCO/tpeA==}
+  playwright@1.61.0:
+    resolution: {integrity: sha512-Z+7BeeqQPRRzklHsVFP4KTGIyMxKUmfeRA4WisM6G3/XW6nwGeX6fX9qYaDa+CiUqpOkb2f6X3nar05R3kSuJQ==}
     engines: {node: '>=18'}
     hasBin: true
 
@@ -2190,28 +2168,28 @@ snapshots:
       '@eslint/core': 1.2.1
       levn: 0.4.1
 
-  '@fallow-cli/darwin-arm64@2.96.0':
+  '@fallow-cli/darwin-arm64@2.101.0':
     optional: true
 
-  '@fallow-cli/darwin-x64@2.96.0':
+  '@fallow-cli/darwin-x64@2.101.0':
     optional: true
 
-  '@fallow-cli/linux-arm64-gnu@2.96.0':
+  '@fallow-cli/linux-arm64-gnu@2.101.0':
     optional: true
 
-  '@fallow-cli/linux-arm64-musl@2.96.0':
+  '@fallow-cli/linux-arm64-musl@2.101.0':
     optional: true
 
-  '@fallow-cli/linux-x64-gnu@2.96.0':
+  '@fallow-cli/linux-x64-gnu@2.101.0':
     optional: true
 
-  '@fallow-cli/linux-x64-musl@2.96.0':
+  '@fallow-cli/linux-x64-musl@2.101.0':
     optional: true
 
-  '@fallow-cli/win32-arm64-msvc@2.96.0':
+  '@fallow-cli/win32-arm64-msvc@2.101.0':
     optional: true
 
-  '@fallow-cli/win32-x64-msvc@2.96.0':
+  '@fallow-cli/win32-x64-msvc@2.101.0':
     optional: true
 
   '@floating-ui/core@1.7.5':
@@ -2280,9 +2258,9 @@ snapshots:
 
   '@oxc-project/types@0.133.0': {}
 
-  '@playwright/test@1.60.0':
+  '@playwright/test@1.61.0':
     dependencies:
-      playwright: 1.60.0
+      playwright: 1.61.0
 
   '@radix-ui/primitive@1.1.4': {}
 
@@ -2327,9 +2305,9 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.2.17
 
-  '@radix-ui/react-label@2.1.9(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
+  '@radix-ui/react-label@2.1.10(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
     dependencies:
-      '@radix-ui/react-primitive': 2.1.5(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+      '@radix-ui/react-primitive': 2.1.6(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       react: 19.2.7
       react-dom: 19.2.7(react@19.2.7)
     optionalDependencies:
@@ -2373,15 +2351,6 @@ snapshots:
       '@types/react': 19.2.17
       '@types/react-dom': 19.2.3(@types/react@19.2.17)
 
-  '@radix-ui/react-primitive@2.1.5(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
-    dependencies:
-      '@radix-ui/react-slot': 1.2.5(@types/react@19.2.17)(react@19.2.7)
-      react: 19.2.7
-      react-dom: 19.2.7(react@19.2.7)
-    optionalDependencies:
-      '@types/react': 19.2.17
-      '@types/react-dom': 19.2.3(@types/react@19.2.17)
-
   '@radix-ui/react-primitive@2.1.6(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
     dependencies:
       '@radix-ui/react-slot': 1.3.0(@types/react@19.2.17)(react@19.2.7)
@@ -2390,13 +2359,6 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.2.17
       '@types/react-dom': 19.2.3(@types/react@19.2.17)
-
-  '@radix-ui/react-slot@1.2.5(@types/react@19.2.17)(react@19.2.7)':
-    dependencies:
-      '@radix-ui/react-compose-refs': 1.1.3(@types/react@19.2.17)(react@19.2.7)
-      react: 19.2.7
-    optionalDependencies:
-      '@types/react': 19.2.17
 
   '@radix-ui/react-slot@1.3.0(@types/react@19.2.17)(react@19.2.7)':
     dependencies:
@@ -3128,18 +3090,18 @@ snapshots:
 
   eventemitter3@5.0.4: {}
 
-  fallow@2.96.0:
+  fallow@2.101.0:
     dependencies:
       detect-libc: 2.1.2
     optionalDependencies:
-      '@fallow-cli/darwin-arm64': 2.96.0
-      '@fallow-cli/darwin-x64': 2.96.0
-      '@fallow-cli/linux-arm64-gnu': 2.96.0
-      '@fallow-cli/linux-arm64-musl': 2.96.0
-      '@fallow-cli/linux-x64-gnu': 2.96.0
-      '@fallow-cli/linux-x64-musl': 2.96.0
-      '@fallow-cli/win32-arm64-msvc': 2.96.0
-      '@fallow-cli/win32-x64-msvc': 2.96.0
+      '@fallow-cli/darwin-arm64': 2.101.0
+      '@fallow-cli/darwin-x64': 2.101.0
+      '@fallow-cli/linux-arm64-gnu': 2.101.0
+      '@fallow-cli/linux-arm64-musl': 2.101.0
+      '@fallow-cli/linux-x64-gnu': 2.101.0
+      '@fallow-cli/linux-x64-musl': 2.101.0
+      '@fallow-cli/win32-arm64-msvc': 2.101.0
+      '@fallow-cli/win32-x64-msvc': 2.101.0
 
   fast-deep-equal@3.1.3: {}
 
@@ -3384,11 +3346,11 @@ snapshots:
 
   picomatch@4.0.4: {}
 
-  playwright-core@1.60.0: {}
+  playwright-core@1.61.0: {}
 
-  playwright@1.60.0:
+  playwright@1.61.0:
     dependencies:
-      playwright-core: 1.60.0
+      playwright-core: 1.61.0
     optionalDependencies:
       fsevents: 2.3.2
 
