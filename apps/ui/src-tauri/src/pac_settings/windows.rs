@@ -24,7 +24,8 @@ pub(super) fn apply_pac_settings_windows(config: &Config) -> Result<AppliedPacSe
     println!("[PAC][Windows] Applying PAC URL -> {}", pac_url);
 
     let snapshot = AppliedPacSettings {
-        previous_auto_config_url: query_reg_string("AutoConfigURL"),
+        previous_auto_config_url: query_reg_string("AutoConfigURL")
+            .filter(|url| !is_own_pac_url(url)),
         previous_auto_detect: query_reg_dword("AutoDetect"),
     };
 
@@ -167,6 +168,16 @@ fn query_reg_value(name: &str) -> Option<(String, String)> {
         return Some((reg_type.to_string(), value.trim_start().to_string()));
     }
     None
+}
+
+/// A pre-existing AutoConfigURL pointing at this app's own PAC server is
+/// leftover state from a run that never cleaned up (crash, force quit,
+/// Ctrl+C on `tauri dev`). Snapshotting it as the user's setting would make
+/// every subsequent removal "restore" it, so the URL would never be cleaned.
+/// Matched by shape rather than against the current `pac_url()` because the
+/// configured PAC port may have changed since the run that leaked it.
+fn is_own_pac_url(url: &str) -> bool {
+    url.starts_with("http://localhost:") && url.ends_with("/proxy.pac")
 }
 
 fn query_reg_string(name: &str) -> Option<String> {
