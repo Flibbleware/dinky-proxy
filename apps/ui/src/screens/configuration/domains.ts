@@ -8,16 +8,18 @@ export const serializeDomains = (domains: string[]): string => domains.join('\n'
 
 const hasScheme = (value: string): boolean => /^[a-zA-Z][a-zA-Z\d+\-.]*:\/\//.test(value)
 
-// Entries like "*.internal.company" aren't valid URLs, so a parse failure means
-// "not a URL" rather than "invalid domain" — fall back to the raw text and let
-// the existing bypass-domain validation reject anything actually malformed.
+const stripWww = (host: string): string => (host.startsWith('www.') ? host.slice(4) : host)
+
+// Only parse entries that already look like a URL (have a scheme). Bare entries
+// may be bypass patterns like "*.internal.company" rather than real hostnames,
+// and WHATWG URL parsing would mangle characters such as "*" that aren't valid
+// in a real host (e.g. percent-encoding it) instead of leaving them alone.
 export const normalizeDomain = (input: string): string => {
   const trimmed = input.trim()
-  if (!trimmed) return trimmed
+  if (!trimmed || !hasScheme(trimmed)) return stripWww(trimmed)
 
   try {
-    const hostname = new URL(hasScheme(trimmed) ? trimmed : `https://${trimmed}`).hostname
-    return hostname.startsWith('www.') ? hostname.slice(4) : hostname
+    return stripWww(new URL(trimmed).hostname)
   } catch {
     return trimmed
   }
