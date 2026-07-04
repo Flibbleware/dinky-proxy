@@ -158,9 +158,9 @@ pub fn encrypt_config(data: &AppConfigPayload, key: &str) -> Result<EncryptedCon
 
     let json = serde_json::to_string(data).context("Failed to serialize config to JSON")?;
 
-    let nonce = Nonce::from_slice(&iv);
+    let nonce = Nonce::from(iv);
     let encrypted = cipher
-        .encrypt(nonce, json.as_bytes())
+        .encrypt(&nonce, json.as_bytes())
         .map_err(|err| anyhow!("Failed to encrypt config: {err}"))?;
 
     // AES-GCM appends the auth tag to the end of the ciphertext
@@ -203,9 +203,10 @@ pub fn decrypt_config(encrypted: &EncryptedConfigFile, key: &str) -> Result<AppC
         .context("config.enc payload is not valid base64")?;
     payload.extend_from_slice(&tag_bytes);
 
-    let nonce = Nonce::from_slice(&iv_bytes);
+    let nonce = Nonce::try_from(iv_bytes.as_slice())
+        .map_err(|err| anyhow!("config.enc iv is not a valid AES-GCM nonce: {err}"))?;
     let decrypted_bytes = cipher
-        .decrypt(nonce, payload.as_ref())
+        .decrypt(&nonce, payload.as_ref())
         .map_err(|_| anyhow!("Failed to decrypt config.enc. Is the master key correct?"))?;
 
     let config: AppConfigPayload = serde_json::from_slice(&decrypted_bytes)
