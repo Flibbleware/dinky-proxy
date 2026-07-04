@@ -1,7 +1,7 @@
 import { type KeyboardEvent, useState } from 'react'
 import { type Control, type FieldPath, type FieldValues, useController } from 'react-hook-form'
 import { cn } from '@/lib/utils'
-import { parseDomains, serializeDomains } from '@/screens/configuration/domains'
+import { normalizeDomain, parseDomains, serializeDomains } from '@/screens/configuration/domains'
 import { DomainPillList } from './domain-pill-list'
 
 type Props<TFieldValues extends FieldValues> = {
@@ -23,12 +23,12 @@ const DomainPillInput = <TFieldValues extends FieldValues>({
   const domains = field.value ? parseDomains(String(field.value)) : []
 
   const addDomain = () => {
-    const trimmed = inputValue.trim()
-    if (!trimmed || domains.includes(trimmed)) {
+    const domain = normalizeDomain(inputValue)
+    if (!domain || domains.includes(domain)) {
       setInputValue('')
       return
     }
-    field.onChange(serializeDomains([...domains, trimmed]))
+    field.onChange(serializeDomains([...domains, domain]))
     setInputValue('')
   }
 
