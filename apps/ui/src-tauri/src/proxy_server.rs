@@ -4,6 +4,7 @@ use anyhow::{anyhow, bail, Context, Result};
 use tokio::io::{self, AsyncBufReadExt, AsyncRead, AsyncReadExt, AsyncWriteExt, BufReader};
 use tokio::net::{TcpListener, TcpStream};
 use tokio::sync::Semaphore;
+use tokio::task::JoinSet;
 use url::Url;
 
 use crate::config::{Config, ProxyProtocol};
@@ -85,24 +86,37 @@ pub async fn run_proxy_server(
 
     let semaphore = Arc::new(Semaphore::new(MAX_CONCURRENT_CONNECTIONS));
 
+    // Connection tasks live in a JoinSet rather than being detached, so that
+    // when this future is dropped (ServerManager::stop aborts it) every
+    // in-flight connection and tunnel is aborted with it, instead of surviving
+    // until the peer closes.
+    let mut connections = JoinSet::new();
+
     loop {
-        let (socket, addr) = listener.accept().await?;
+        tokio::select! {
+            accepted = listener.accept() => {
+                let (socket, addr) = accepted?;
 
-        // Take a slot before spawning. When all slots are in use this awaits,
-        // applying back-pressure (new connections queue in the OS backlog)
-        // instead of growing tasks and upstream sockets without bound.
-        let permit = Arc::clone(&semaphore).acquire_owned().await?;
+                // Take a slot before spawning. When all slots are in use this
+                // awaits, applying back-pressure (new connections queue in the
+                // OS backlog) instead of growing tasks and upstream sockets
+                // without bound.
+                let permit = Arc::clone(&semaphore).acquire_owned().await?;
 
-        let config = config.clone();
-        let credentials = credentials.clone();
-        let auth_header = build_auth_header(&credentials);
+                let config = config.clone();
+                let credentials = credentials.clone();
+                let auth_header = build_auth_header(&credentials);
 
-        tokio::spawn(async move {
-            let _permit = permit; // held for the connection's lifetime
-            if let Err(err) = handle_client(socket, config, credentials, auth_header).await {
-                eprintln!("Client {} error: {:?}", addr, err);
+                connections.spawn(async move {
+                    let _permit = permit; // held for the connection's lifetime
+                    if let Err(err) = handle_client(socket, config, credentials, auth_header).await {
+                        eprintln!("Client {} error: {:?}", addr, err);
+                    }
+                });
             }
-        });
+            // Reap finished tasks; a JoinSet retains results until joined.
+            Some(_) = connections.join_next() => {}
+        }
     }
 }
 
@@ -720,5 +734,78 @@ mod tests {
         assert!(upstream_head.to_lowercase().contains("connection: close"));
         assert!(!upstream_head.to_lowercase().contains("keep-alive"));
         assert!(upstream_head.contains("Proxy-Authorization: Basic dXNlcjpwYXNz"));
+    }
+
+    /// Aborting the server task must tear down established tunnels, not just
+    /// the accept loop. Previously connection tasks were detached, so an open
+    /// CONNECT tunnel kept relaying after the user hit "Disable".
+    #[tokio::test]
+    async fn aborting_server_closes_established_tunnels() {
+        use std::time::Duration;
+
+        // Mock upstream proxy: accept the CONNECT, reply 200, then hold the
+        // tunnel open indefinitely.
+        let upstream = TcpListener::bind("127.0.0.1:0").await.unwrap();
+        let upstream_port = upstream.local_addr().unwrap().port();
+        tokio::spawn(async move {
+            let (mut sock, _) = upstream.accept().await.unwrap();
+            let mut head = Vec::new();
+            let mut byte = [0u8; 1];
+            while !head.ends_with(b"\r\n\r\n") {
+                sock.read_exact(&mut byte).await.unwrap();
+                head.push(byte[0]);
+            }
+            sock.write_all(b"HTTP/1.1 200 Connection established\r\n\r\n")
+                .await
+                .unwrap();
+            let mut buf = [0u8; 1024];
+            while sock.read(&mut buf).await.unwrap_or(0) > 0 {}
+        });
+
+        let proxy_listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
+        let local_port = proxy_listener.local_addr().unwrap().port();
+
+        let config = Config {
+            proxy_host: "127.0.0.1".to_string(),
+            proxy_port: upstream_port,
+            proxy_protocol: ProxyProtocol::Http,
+            local_proxy_port: local_port,
+            pac_port: 0,
+            bypass_domains: vec![],
+            username: "user".to_string(),
+            password: "pass".to_string(),
+            base_dir: std::path::PathBuf::from("/tmp"),
+        };
+        let credentials = Credentials {
+            username: "user".to_string(),
+            password: "pass".to_string(),
+        };
+
+        let server = tokio::spawn(run_proxy_server(proxy_listener, config, credentials));
+
+        let mut client = TcpStream::connect(("127.0.0.1", local_port)).await.unwrap();
+        client
+            .write_all(b"CONNECT example.test:443 HTTP/1.1\r\n\r\n")
+            .await
+            .unwrap();
+
+        // Read until the relayed 200 response (status line + blank line) is in.
+        let mut response = Vec::new();
+        let mut byte = [0u8; 1];
+        while !response.ends_with(b"\r\n\r\n") {
+            client.read_exact(&mut byte).await.unwrap();
+            response.push(byte[0]);
+        }
+        assert!(String::from_utf8_lossy(&response).contains("200"));
+
+        server.abort();
+
+        // The tunnel must close promptly once the server is gone.
+        let mut buf = [0u8; 16];
+        match tokio::time::timeout(Duration::from_secs(5), client.read(&mut buf)).await {
+            Ok(Ok(0)) | Ok(Err(_)) => {} // closed (EOF or reset)
+            Ok(Ok(n)) => panic!("unexpected {n} bytes through a dead tunnel"),
+            Err(_) => panic!("tunnel survived server abort"),
+        }
     }
 }

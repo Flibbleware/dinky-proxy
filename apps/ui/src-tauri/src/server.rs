@@ -136,6 +136,13 @@ impl ServerManager {
             println!("[ServerManager] Stopping proxy and PAC servers...");
             handles.proxy_handle.abort();
             handles.pac_handle.abort();
+            // Await the aborted tasks: abort() only schedules cancellation, and
+            // the listeners (plus every in-flight connection, via the servers'
+            // JoinSets) are freed only when the futures are dropped. Without
+            // this, a subsequent start() can lose a race for the port against
+            // the old listener.
+            let _ = handles.proxy_handle.await;
+            let _ = handles.pac_handle.await;
             if let Some(_config) = active_config_guard.take() {
                 println!("[ServerManager] Removing PAC settings before fully stopping");
                 if let Err(err) = crate::pac_settings::commands::remove_pac_settings() {
@@ -163,8 +170,6 @@ impl ServerManager {
                 err
             );
         }
-        // Small delay to ensure cleanup
-        tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
         self.start(app_handle, master_key).await
     }
 

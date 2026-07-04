@@ -5,6 +5,7 @@ use tokio::fs;
 use tokio::io::{AsyncBufReadExt, AsyncReadExt, AsyncWriteExt, BufReader};
 use tokio::net::{TcpListener, TcpStream};
 use tokio::sync::Semaphore;
+use tokio::task::JoinSet;
 
 use crate::config::Config;
 use crate::net::{with_timeout, CLIENT_REQUEST_TIMEOUT};
@@ -27,17 +28,26 @@ pub async fn run_pac_server(listener: TcpListener, config: Config) -> Result<()>
 
     let semaphore = Arc::new(Semaphore::new(MAX_CONCURRENT_PAC_CONNECTIONS));
 
-    loop {
-        let (socket, addr) = listener.accept().await?;
-        let permit = Arc::clone(&semaphore).acquire_owned().await?;
-        let config = config.clone();
+    // Same pattern as the proxy server: tasks in a JoinSet die with this
+    // future, so a stopped server stops serving immediately.
+    let mut connections = JoinSet::new();
 
-        tokio::spawn(async move {
-            let _permit = permit; // held until the response is sent
-            if let Err(err) = handle_pac_connection(socket, config).await {
-                eprintln!("PAC client {} error: {:?}", addr, err);
+    loop {
+        tokio::select! {
+            accepted = listener.accept() => {
+                let (socket, addr) = accepted?;
+                let permit = Arc::clone(&semaphore).acquire_owned().await?;
+                let config = config.clone();
+
+                connections.spawn(async move {
+                    let _permit = permit; // held until the response is sent
+                    if let Err(err) = handle_pac_connection(socket, config).await {
+                        eprintln!("PAC client {} error: {:?}", addr, err);
+                    }
+                });
             }
-        });
+            Some(_) = connections.join_next() => {}
+        }
     }
 }
 
