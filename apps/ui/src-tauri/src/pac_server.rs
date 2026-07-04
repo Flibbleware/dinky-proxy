@@ -1,19 +1,37 @@
+use std::sync::Arc;
+
 use anyhow::Result;
 use tokio::fs;
-use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
+use tokio::io::{AsyncBufReadExt, AsyncReadExt, AsyncWriteExt, BufReader};
 use tokio::net::{TcpListener, TcpStream};
+use tokio::sync::Semaphore;
 
 use crate::config::Config;
+use crate::net::{with_timeout, CLIENT_REQUEST_TIMEOUT};
+
+/// Upper bound on concurrent PAC requests serviced at once. PAC fetches are
+/// short-lived, so this only needs to absorb bursts (e.g. many tabs after a
+/// network change) without spawning tasks without bound.
+const MAX_CONCURRENT_PAC_CONNECTIONS: usize = 64;
+
+/// Cap on the request head read before responding. The PAC handler ignores the
+/// request, so this just stops a client from streaming an unbounded "line" with
+/// no newline to exhaust memory.
+const MAX_REQUEST_BYTES: u64 = 8 * 1024;
 
 pub async fn run_pac_server(config: Config) -> Result<()> {
     let listener = TcpListener::bind(("127.0.0.1", config.pac_port)).await?;
     println!("PAC server running on http://localhost:{}", config.pac_port);
 
+    let semaphore = Arc::new(Semaphore::new(MAX_CONCURRENT_PAC_CONNECTIONS));
+
     loop {
         let (socket, addr) = listener.accept().await?;
+        let permit = Arc::clone(&semaphore).acquire_owned().await?;
         let config = config.clone();
 
         tokio::spawn(async move {
+            let _permit = permit; // held until the response is sent
             if let Err(err) = handle_pac_connection(socket, config).await {
                 eprintln!("PAC client {} error: {:?}", addr, err);
             }
@@ -25,8 +43,18 @@ async fn handle_pac_connection(socket: TcpStream, config: Config) -> Result<()> 
     let (client_read, mut client_write) = socket.into_split();
     let mut reader = BufReader::new(client_read);
 
+    // Drain the request head with a size cap and a timeout. The PAC response is
+    // identical for every caller, so the request itself is ignored — but reading
+    // it unbounded would let a client stall (slow-loris) or stream forever to
+    // hold the task open and exhaust memory.
     let mut _request_line = String::new();
-    let _ = reader.read_line(&mut _request_line).await?;
+    with_timeout(CLIENT_REQUEST_TIMEOUT, "PAC request read", async {
+        AsyncReadExt::take(&mut reader, MAX_REQUEST_BYTES)
+            .read_line(&mut _request_line)
+            .await?;
+        Ok(())
+    })
+    .await?;
 
     let pac_file = config.pac_path();
     match fs::read_to_string(&pac_file).await {

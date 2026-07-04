@@ -17,8 +17,8 @@ fn get_active_network_service() -> Result<String> {
     let mut default_iface: Option<String> = None;
 
     for line in stdout.lines() {
-        if line.trim_start().starts_with("interface:") {
-            default_iface = Some(line.split(':').nth(1).unwrap().trim().to_string());
+        if let Some(iface) = line.trim_start().strip_prefix("interface:") {
+            default_iface = Some(iface.trim().to_string());
             break;
         }
     }

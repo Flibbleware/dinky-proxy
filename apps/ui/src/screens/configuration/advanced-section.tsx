@@ -1,39 +1,35 @@
-import { type FieldErrors } from 'react-hook-form'
+import type { FieldErrors } from 'react-hook-form'
 import { Field, FieldContent, FieldError, FieldLabel, FieldSet } from '@/components/controls/field'
 import { Input } from '@/components/controls/input'
-import { type ConfigurationFormRecord } from './types'
 import { Select, SelectOption } from '@/components/controls/select'
-import { FormSection } from '@/components/forms/form-section'
-import { createFieldHelper } from './utils'
+import { useSettingsLocked } from '@/useInitialisation'
+import type { ConfigurationFormRecord } from './types'
+import type { createFieldHelper } from './utils'
 
-type AdvancedConfigurationSectionProps = {
+type Props = {
   field: ReturnType<typeof createFieldHelper<ConfigurationFormRecord>>
   errors: FieldErrors<ConfigurationFormRecord>
 }
 
-const AdvancedConfigurationSection = ({ field, errors }: AdvancedConfigurationSectionProps) => (
-  <FormSection aria-labelledby="advanced-settings-heading">
-    <FieldSet>
+const AdvancedConfigurationSection = ({ field, errors }: Props) => {
+  const disabled = useSettingsLocked()
+
+  return (
+    <FieldSet disabled={disabled}>
       <legend className="sr-only">Advanced proxy settings</legend>
-      <h2 id="advanced-settings-heading" className="sr-only">
-        Advanced settings
-      </h2>
       <Field>
         <FieldLabel<ConfigurationFormRecord>
           htmlFor="proxyProtocol"
           hint="Choose the upstream proxy type. Credentials are used for both."
         >
-          Proxy protocol
+          Protocol
         </FieldLabel>
         <FieldContent>
           <Select {...field('proxyProtocol')} aria-invalid={!!errors.proxyProtocol}>
             <SelectOption value="http">HTTP</SelectOption>
             <SelectOption value="socks5">SOCKS5</SelectOption>
           </Select>
-          <FieldError
-            id="proxyProtocol-error"
-            errors={errors.proxyProtocol ? [errors.proxyProtocol] : undefined}
-          />
+          <FieldError id="proxyProtocol-error" error={errors.proxyProtocol} />
         </FieldContent>
       </Field>
       <div className="grid grid-cols-2 items-start gap-3">
@@ -42,7 +38,7 @@ const AdvancedConfigurationSection = ({ field, errors }: AdvancedConfigurationSe
             htmlFor="port"
             hint="The port the local wrapper listens on (used in the PAC file)."
           >
-            Local Server port
+            Local Server Port
           </FieldLabel>
           <FieldContent>
             <Input
@@ -52,7 +48,7 @@ const AdvancedConfigurationSection = ({ field, errors }: AdvancedConfigurationSe
               autoComplete="off"
               aria-invalid={!!errors.port}
             />
-            <FieldError id="port-error" errors={errors.port ? [errors.port] : undefined} />
+            <FieldError id="port-error" error={errors.port} />
           </FieldContent>
         </Field>
 
@@ -61,7 +57,7 @@ const AdvancedConfigurationSection = ({ field, errors }: AdvancedConfigurationSe
             htmlFor="pacServerPort"
             hint="The port serving the PAC file (http://localhost:<port>)."
           >
-            PAC server port
+            PAC Server Port
           </FieldLabel>
           <FieldContent>
             <Input
@@ -71,36 +67,12 @@ const AdvancedConfigurationSection = ({ field, errors }: AdvancedConfigurationSe
               autoComplete="off"
               aria-invalid={!!errors.pacServerPort}
             />
-            <FieldError
-              id="pacServerPort-error"
-              errors={errors.pacServerPort ? [errors.pacServerPort] : undefined}
-            />
+            <FieldError id="pacServerPort-error" error={errors.pacServerPort} />
           </FieldContent>
         </Field>
       </div>
-
-      <Field>
-        <FieldLabel<ConfigurationFormRecord>
-          htmlFor="networkTarget"
-          hint="The network service name to apply proxy settings to (e.g. Wi-Fi)."
-        >
-          Network service
-        </FieldLabel>
-        <FieldContent>
-          <Input
-            {...field('networkTarget')}
-            type="text"
-            autoComplete="off"
-            aria-invalid={!!errors.networkTarget}
-          />
-          <FieldError
-            id="networkTarget-error"
-            errors={errors.networkTarget ? [errors.networkTarget] : undefined}
-          />
-        </FieldContent>
-      </Field>
     </FieldSet>
-  </FormSection>
-)
+  )
+}
 
 export default AdvancedConfigurationSection

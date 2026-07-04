@@ -76,7 +76,7 @@ fn main() {
             }
 
             // Create system tray menu
-            let menu = tray::build_tray_menu(app.handle(), "Start Server")?;
+            let menu = tray::build_tray_menu(app.handle(), "Enable")?;
 
             // Create system tray icon
             let icon = tray::get_app_icon(false);
@@ -96,8 +96,9 @@ fn main() {
                 let window_clone = window.clone();
                 window.on_window_event(move |event| {
                     if let tauri::WindowEvent::CloseRequested { api, .. } = event {
-                        // Prevent the window from closing and hide it instead
-                        window_clone.hide().unwrap();
+                        // Prevent the window from closing and hide it instead.
+                        // Best-effort: a failed hide must not panic the event loop.
+                        let _ = window_clone.hide();
                         api.prevent_close();
                     }
                 });

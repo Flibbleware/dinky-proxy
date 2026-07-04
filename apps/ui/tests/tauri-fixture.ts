@@ -1,9 +1,9 @@
+import { spawn } from 'node:child_process'
+import os from 'node:os'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { test as base, expect, type Page } from '@playwright/test'
-import { spawn } from 'child_process'
-import path from 'path'
-import { fileURLToPath } from 'url'
 import kill from 'tree-kill'
-import os from 'os'
 
 declare global {
   interface Window {
@@ -32,17 +32,6 @@ const waitForVite = async (url: string, timeout = 45000) => {
   throw new Error('Vite server did not start in time')
 }
 
-const killLeftoverTauri = async () => {
-  const processName = os.platform() === 'win32' ? 'dinkyproxy-ui.exe' : 'dinkyproxy-ui'
-
-  const cmd =
-    os.platform() === 'win32' ? `taskkill /F /IM ${processName}` : `pkill -f ${processName}`
-
-  await new Promise((resolve) => {
-    spawn(cmd, { shell: true }).on('close', resolve)
-  })
-}
-
 const DEFAULT_CONFIG_STUB = {
   port: 8888,
   bypassDomains: [],
@@ -50,7 +39,6 @@ const DEFAULT_CONFIG_STUB = {
   proxyHost: '',
   proxyPort: 8080,
   pacServerPort: 8000,
-  networkTarget: 'Wi-Fi',
   username: '',
   password: '',
 }
@@ -67,6 +55,7 @@ export const test = base.extend<
       window.__TAURI_INTERNALS__ = window.__TAURI_INTERNALS__ ?? {}
       window.__TAURI_INTERNALS__.invoke = async (cmd) => {
         if (cmd === 'load_config_command') return config
+        if (cmd === 'is_server_running_command') return false
         return null
       }
     }, DEFAULT_CONFIG_STUB)
@@ -74,15 +63,12 @@ export const test = base.extend<
   },
 
   tauriProcess: [
+    // biome-ignore lint/correctness/noEmptyPattern: Playwright requires the first fixture arg to be an object-destructuring pattern, even when no fixtures are used
     async ({}, use) => {
       const uiPath = path.resolve(__dirname, '..')
 
-      const proc = spawn('pnpm', ['tauri', 'dev'], {
+      const proc = spawn('pnpm', ['dev:vite'], {
         cwd: uiPath,
-        env: {
-          ...process.env,
-          TAURI_DEV_WATCHER: 'false',
-        },
         shell: os.platform() === 'win32',
         detached: true,
         stdio: 'pipe',
@@ -90,9 +76,10 @@ export const test = base.extend<
 
       await use(proc)
 
-      if (proc.pid) kill(proc.pid, 'SIGKILL')
-
-      await killLeftoverTauri()
+      await new Promise<void>((resolve) => {
+        if (proc.pid) kill(proc.pid, 'SIGKILL', () => resolve())
+        else resolve()
+      })
     },
     { scope: 'worker' },
   ],

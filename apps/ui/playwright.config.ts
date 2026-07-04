@@ -15,7 +15,7 @@ export default defineConfig({
   expect: {
     timeout: TIMEOUT,
     toHaveScreenshot: {
-      maxDiffPixelRatio: 0.02,
+      maxDiffPixelRatio: 0.0,
       animations: 'disabled',
     },
   },
@@ -23,6 +23,6 @@ export default defineConfig({
     actionTimeout: TIMEOUT,
     trace: 'on-first-retry',
     video: 'on-first-retry',
-    viewport: { width: 650, height: 680 },
+    viewport: { width: 620, height: 610 },
   },
 })

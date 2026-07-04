@@ -15,9 +15,6 @@ const DEFAULT_PROXY_HOST: &str = "";
 const DEFAULT_PROXY_PORT: u16 = 8080;
 const DEFAULT_PAC_PORT: u16 = 8000;
 const DEFAULT_LOCAL_PROXY_PORT: u16 = 8888;
-#[cfg(target_os = "macos")]
-const DEFAULT_NETWORK_TARGET: &str = "Wi-Fi";
-
 #[derive(Clone, Copy, Debug, Deserialize, Serialize, PartialEq, Eq)]
 #[serde(rename_all = "lowercase")]
 pub enum ProxyProtocol {
@@ -25,7 +22,7 @@ pub enum ProxyProtocol {
     Socks5,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct AppConfigPayload {
     pub port: u16,
@@ -34,10 +31,24 @@ pub struct AppConfigPayload {
     pub proxy_host: String,
     pub proxy_port: u16,
     pub pac_server_port: u16,
-    #[cfg(target_os = "macos")]
-    pub network_target: String,
     pub username: String,
     pub password: String,
+}
+
+// Hand-written so the stored password is never leaked through a `{:?}`.
+impl std::fmt::Debug for AppConfigPayload {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let mut d = f.debug_struct("AppConfigPayload");
+        d.field("port", &self.port)
+            .field("bypass_domains", &self.bypass_domains)
+            .field("proxy_protocol", &self.proxy_protocol)
+            .field("proxy_host", &self.proxy_host)
+            .field("proxy_port", &self.proxy_port)
+            .field("pac_server_port", &self.pac_server_port);
+        d.field("username", &self.username)
+            .field("password", &"<redacted>")
+            .finish()
+    }
 }
 
 impl Default for AppConfigPayload {
@@ -49,15 +60,13 @@ impl Default for AppConfigPayload {
             proxy_host: DEFAULT_PROXY_HOST.to_string(),
             proxy_port: DEFAULT_PROXY_PORT,
             pac_server_port: DEFAULT_PAC_PORT,
-            #[cfg(target_os = "macos")]
-            network_target: DEFAULT_NETWORK_TARGET.to_string(),
             username: String::new(),
             password: String::new(),
         }
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 pub struct Config {
     pub proxy_host: String,
     pub proxy_port: u16,
@@ -68,6 +77,25 @@ pub struct Config {
     pub username: String,
     pub password: String,
     pub base_dir: PathBuf,
+}
+
+// Hand-written so the password is never leaked through a `{:?}`. `Config` is
+// cloned widely and held for the process lifetime, so a stray debug print would
+// be easy to introduce otherwise.
+impl std::fmt::Debug for Config {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("Config")
+            .field("proxy_host", &self.proxy_host)
+            .field("proxy_port", &self.proxy_port)
+            .field("proxy_protocol", &self.proxy_protocol)
+            .field("local_proxy_port", &self.local_proxy_port)
+            .field("pac_port", &self.pac_port)
+            .field("bypass_domains", &self.bypass_domains)
+            .field("username", &self.username)
+            .field("password", &"<redacted>")
+            .field("base_dir", &self.base_dir)
+            .finish()
+    }
 }
 
 impl Config {
@@ -284,12 +312,6 @@ pub fn normalize_config_payload(payload: &serde_json::Value) -> AppConfigPayload
             .unwrap_or_else(|| DEFAULT_PROXY_HOST.to_string()),
         proxy_port: coerce_number(obj.get("proxyPort"), DEFAULT_PROXY_PORT),
         pac_server_port: coerce_number(obj.get("pacServerPort"), DEFAULT_PAC_PORT),
-        #[cfg(target_os = "macos")]
-        network_target: obj
-            .get("networkTarget")
-            .and_then(|v| v.as_str())
-            .map(|s| s.to_string())
-            .unwrap_or_else(|| DEFAULT_NETWORK_TARGET.to_string()),
         username: obj
             .get("username")
             .and_then(|v| v.as_str())
@@ -315,8 +337,6 @@ mod tests {
             proxy_host: "proxy.example.com".to_string(),
             proxy_port: 3128,
             pac_server_port: 9000,
-            #[cfg(target_os = "macos")]
-            network_target: "Wi-Fi".to_string(),
             username: "user".to_string(),
             password: "hunter2".to_string(),
         }

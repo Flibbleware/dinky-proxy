@@ -1,18 +1,19 @@
-import type { ComponentProps } from 'react'
 import { CircleHelp } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import type { ComponentProps } from 'react'
 import { Label } from '@/components/controls/label'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/controls/tooltip'
+import { cn } from '@/lib/utils'
 
 const FieldSet = ({ className, ...props }: ComponentProps<'fieldset'>) => (
   <fieldset className={cn('flex flex-col gap-6', className)} {...props} />
 )
 
 const Field = ({ className, ...props }: ComponentProps<'div'>) => (
+  // biome-ignore lint/a11y/useSemanticElements: generic field layout primitive; a <fieldset> would nest inside FieldSet and force block styling
   <div
     role="group"
     className={cn(
-      'group/field data-[invalid=true]:text-destructive flex w-full gap-3',
+      'group/field flex w-full gap-3 data-[invalid=true]:text-destructive',
       'flex-col [&>*]:w-full [&>.sr-only]:w-auto',
       className,
     )}
@@ -55,7 +56,7 @@ const FieldLabel = <TFieldValues extends Record<string, unknown> = Record<string
       <Tooltip>
         <TooltipTrigger
           type="button"
-          className="focus-visible:ring-ring/50 cursor-pointer rounded-full text-slate-500 outline-none hover:text-slate-300 focus-visible:text-slate-300 focus-visible:ring-[3px]"
+          className="cursor-pointer rounded-full text-slate-500 outline-none hover:text-slate-300 focus-visible:text-slate-300 focus-visible:ring-[3px] focus-visible:ring-ring/50"
           aria-label={
             typeof children === 'string' ? `More information about ${children}` : 'More information'
           }
@@ -68,40 +69,19 @@ const FieldLabel = <TFieldValues extends Record<string, unknown> = Record<string
   </div>
 )
 
-const FieldDescription = ({ className, ...props }: ComponentProps<'p'>) => (
-  <p className={cn('text-sm leading-snug text-slate-400', className)} {...props} />
-)
-
 type FieldErrorProps = ComponentProps<'div'> & {
-  errors?: Array<{ message?: string } | undefined> | undefined
+  error?: { message?: string } | undefined
 }
 
-const FieldError = ({ className, children, errors, ...props }: FieldErrorProps) => {
-  if (!children && !errors?.length) return null
-
-  let content = children
-
-  if (!content) {
-    const uniqueErrors = [...new Map(errors?.map((e) => [e?.message, e]) ?? []).values()]
-    content =
-      uniqueErrors.length === 1 ? (
-        uniqueErrors[0]?.message
-      ) : (
-        <ul className="ml-4 flex list-disc flex-col gap-1">
-          {uniqueErrors.map(
-            (error) => error?.message && <li key={error.message}>{error.message}</li>,
-          )}
-        </ul>
-      )
-  }
-
+const FieldError = ({ className, children, error, ...props }: FieldErrorProps) => {
+  const content = children ?? error?.message
   if (!content) return null
 
   return (
-    <div role="alert" className={cn('text-destructive text-sm font-normal', className)} {...props}>
+    <div role="alert" className={cn('font-normal text-destructive text-sm', className)} {...props}>
       {content}
     </div>
   )
 }
 
-export { Field, FieldLabel, FieldError, FieldSet, FieldContent, FieldDescription }
+export { Field, FieldContent, FieldError, FieldLabel, FieldSet }
