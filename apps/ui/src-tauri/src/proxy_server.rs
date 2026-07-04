@@ -503,7 +503,36 @@ async fn forward_http(
     // buffering would deadlock every plain-HTTP request. The upstream owns body
     // framing (Content-Length or chunked), and the forced `Connection: close`
     // guarantees the relay terminates once the response is complete.
-    pipe_streams(reader, client_writer, proxy_stream).await
+    relay_forwarded_request(reader, client_writer, proxy_stream).await
+}
+
+/// Relay a forwarded request's remaining bytes and its response. Unlike a
+/// CONNECT tunnel, only the upstream's close ends the exchange: a client may
+/// legitimately half-close after sending its request (EOF marks the end of the
+/// body), and the response must still be relayed back to it.
+async fn relay_forwarded_request(
+    mut client_reader: ClientReader,
+    mut client_writer: tokio::net::tcp::OwnedWriteHalf,
+    proxy_stream: TcpStream,
+) -> Result<()> {
+    let (mut proxy_read, mut proxy_write) = proxy_stream.into_split();
+
+    let feed_request = async {
+        let _ = io::copy(&mut client_reader, &mut proxy_write).await;
+        // Propagate the client's half-close so an upstream reading an
+        // EOF-terminated body sees the end of the request.
+        let _ = proxy_write.shutdown().await;
+        std::future::pending::<()>().await
+    };
+
+    tokio::select! {
+        _ = feed_request => unreachable!("feed_request never completes"),
+        result = io::copy(&mut proxy_read, &mut client_writer) => {
+            result?;
+        }
+    }
+
+    Ok(())
 }
 
 async fn pipe_streams<R>(
@@ -738,6 +767,71 @@ mod tests {
         assert!(upstream_head.to_lowercase().contains("connection: close"));
         assert!(!upstream_head.to_lowercase().contains("keep-alive"));
         assert!(upstream_head.contains("Proxy-Authorization: Basic dXNlcjpwYXNz"));
+    }
+
+    /// A client that half-closes after sending its request (EOF-terminated
+    /// body, e.g. `printf … | nc`) must still receive the response: the relay
+    /// may only end when the upstream closes, not when the client's request
+    /// side finishes.
+    #[tokio::test]
+    async fn half_closing_client_still_gets_response() {
+        use std::time::Duration;
+
+        let upstream = TcpListener::bind("127.0.0.1:0").await.unwrap();
+        let upstream_port = upstream.local_addr().unwrap().port();
+
+        let upstream_task = tokio::spawn(async move {
+            let (mut sock, _) = upstream.accept().await.unwrap();
+            let mut head = Vec::new();
+            let mut byte = [0u8; 1];
+            while !head.ends_with(b"\r\n\r\n") {
+                sock.read_exact(&mut byte).await.unwrap();
+                head.push(byte[0]);
+            }
+            sock.write_all(
+                b"HTTP/1.1 200 OK\r\nContent-Length: 5\r\nConnection: close\r\n\r\nhello",
+            )
+            .await
+            .unwrap();
+            sock.shutdown().await.unwrap();
+        });
+
+        let proxy_listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
+        let local_port = proxy_listener.local_addr().unwrap().port();
+
+        let config = Config {
+            proxy_host: "127.0.0.1".to_string(),
+            proxy_port: upstream_port,
+            proxy_protocol: ProxyProtocol::Http,
+            local_proxy_port: local_port,
+            pac_port: 0,
+            bypass_domains: vec![],
+            username: "user".to_string(),
+            password: "pass".to_string(),
+            base_dir: std::path::PathBuf::from("/tmp"),
+        };
+        let credentials = Credentials {
+            username: "user".to_string(),
+            password: "pass".to_string(),
+        };
+
+        tokio::spawn(run_proxy_server(proxy_listener, config, credentials));
+
+        let mut client = TcpStream::connect(("127.0.0.1", local_port)).await.unwrap();
+        client
+            .write_all(b"GET http://example.test/ HTTP/1.1\r\nHost: example.test\r\n\r\n")
+            .await
+            .unwrap();
+        client.shutdown().await.unwrap();
+
+        let mut response = Vec::new();
+        tokio::time::timeout(Duration::from_secs(5), client.read_to_end(&mut response))
+            .await
+            .expect("response was dropped for a half-closed client")
+            .unwrap();
+        assert!(String::from_utf8_lossy(&response).contains("hello"));
+
+        upstream_task.await.unwrap();
     }
 
     /// Aborting the server task must tear down established tunnels, not just
