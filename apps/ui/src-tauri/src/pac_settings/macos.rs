@@ -59,8 +59,17 @@ fn get_active_network_service() -> Result<String> {
     Ok(default_iface)
 }
 
+/// The network service the PAC settings were applied to. Removal must target
+/// this exact service: re-resolving the active service at remove time would
+/// point at the wrong one if the user switched networks (e.g. Wi-Fi →
+/// Ethernet) while the proxy was enabled, leaving auto-proxy stuck on for the
+/// old service.
+pub(crate) struct AppliedPacSettings {
+    service: String,
+}
+
 #[cfg(target_os = "macos")]
-pub(super) fn apply_pac_settings_macos(config: &Config) -> Result<()> {
+pub(super) fn apply_pac_settings_macos(config: &Config) -> Result<AppliedPacSettings> {
     let pac_url = config.pac_url();
 
     let service = get_active_network_service()?;
@@ -92,18 +101,18 @@ pub(super) fn apply_pac_settings_macos(config: &Config) -> Result<()> {
         }
     }
 
-    Ok(())
+    Ok(AppliedPacSettings { service })
 }
 
 #[cfg(target_os = "macos")]
-pub(super) fn remove_pac_settings_macos() -> Result<()> {
-    let service = get_active_network_service()?;
+pub(super) fn remove_pac_settings_macos(applied: &AppliedPacSettings) -> Result<()> {
+    let service = &applied.service;
 
     println!("[PAC] Removing system PAC settings for '{}'", service);
 
     // macOS does not accept an empty URL for -setautoproxyurl, so we only disable
     // the proxy state. The stale URL is inert while auto-proxy is off.
-    let disable_args = ["networksetup", "-setautoproxystate", &service, "off"];
+    let disable_args = ["networksetup", "-setautoproxystate", service, "off"];
     let disable_status = Command::new(disable_args[0])
         .args(&disable_args[1..])
         .status()?;

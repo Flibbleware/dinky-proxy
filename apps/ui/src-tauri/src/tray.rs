@@ -1,5 +1,6 @@
 use crate::server::ServerManager;
-use image::Rgba;
+use image::{Rgba, RgbaImage};
+use std::sync::OnceLock;
 use tauri::{
     image::Image,
     menu::{Menu, MenuItem, PredefinedMenuItem},
@@ -31,8 +32,10 @@ pub(crate) fn build_tray_menu(
     Ok(menu)
 }
 
-pub fn get_app_icon(is_active: bool) -> Image<'static> {
+fn render_icon(is_active: bool) -> RgbaImage {
     let icon_bytes = include_bytes!("../../public/pac_logo.png");
+    // The PNG is embedded at compile time, so a decode failure is a build
+    // defect, not a runtime condition.
     let mut img = image::load_from_memory(icon_bytes)
         .expect("Failed to load icon")
         .to_rgba8();
@@ -55,8 +58,24 @@ pub fn get_app_icon(is_active: bool) -> Image<'static> {
         }
     }
 
+    img
+}
+
+/// Cached because the tray re-requests an icon on every start/stop toggle.
+fn icon_image(is_active: bool) -> &'static RgbaImage {
+    static INACTIVE: OnceLock<RgbaImage> = OnceLock::new();
+    static ACTIVE: OnceLock<RgbaImage> = OnceLock::new();
+    if is_active {
+        ACTIVE.get_or_init(|| render_icon(true))
+    } else {
+        INACTIVE.get_or_init(|| render_icon(false))
+    }
+}
+
+pub fn get_app_icon(is_active: bool) -> Image<'static> {
+    let img = icon_image(is_active);
     let (width, height) = img.dimensions();
-    Image::new_owned(img.into_raw(), width, height)
+    Image::new_owned(img.as_raw().clone(), width, height)
 }
 
 pub async fn update_tray_state(app: &AppHandle) {

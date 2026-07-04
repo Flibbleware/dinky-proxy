@@ -9,10 +9,10 @@ mod windows;
 
 // Re-export ONLY the implementation for the current OS
 #[cfg(target_os = "macos")]
-use macos::*;
+pub(crate) use macos::*;
 
 #[cfg(target_os = "windows")]
-use windows::*;
+pub(crate) use windows::*;
 
 // Shared cross-platform API
 pub mod commands;

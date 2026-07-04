@@ -1,18 +1,21 @@
 use anyhow::{Context, Result};
 use std::sync::Arc;
 use tauri::{AppHandle, Manager};
+use tokio::net::TcpListener;
 use tokio::sync::Mutex;
 
 use crate::auth_check::test_proxy_auth;
 use crate::config::Config;
 use crate::credentials::load_credentials;
 use crate::pac_server::{run_pac_server, sync_default_pac};
-use crate::pac_settings::commands::apply_pac_settings;
+use crate::pac_settings::commands::{apply_pac_settings, remove_pac_settings, AppliedPacSettings};
 use crate::proxy_server::run_proxy_server;
 
 pub struct ServerManager {
     handles: Arc<Mutex<Option<ServerHandles>>>,
-    active_config: Arc<Mutex<Option<Config>>>,
+    // Snapshot of the system PAC state taken at apply time, so stop/quit can
+    // undo exactly what was changed even if the network environment moved on.
+    applied_pac: Arc<Mutex<Option<AppliedPacSettings>>>,
 }
 
 struct ServerHandles {
@@ -24,7 +27,7 @@ impl ServerManager {
     pub fn new() -> Self {
         Self {
             handles: Arc::new(Mutex::new(None)),
-            active_config: Arc::new(Mutex::new(None)),
+            applied_pac: Arc::new(Mutex::new(None)),
         }
     }
 
@@ -71,6 +74,26 @@ impl ServerManager {
             .await
             .context("Proxy authentication failed")?;
 
+        // Bind both listeners before spawning anything, so a port conflict
+        // fails this command with an actionable error instead of dying silently
+        // inside a spawned task while the tray reports the server as running.
+        let proxy_listener = TcpListener::bind(("127.0.0.1", config.local_proxy_port))
+            .await
+            .with_context(|| {
+                format!(
+                    "Failed to bind local proxy port {} (is it already in use?)",
+                    config.local_proxy_port
+                )
+            })?;
+        let pac_listener = TcpListener::bind(("127.0.0.1", config.pac_port))
+            .await
+            .with_context(|| {
+                format!(
+                    "Failed to bind PAC server port {} (is it already in use?)",
+                    config.pac_port
+                )
+            })?;
+
         // take the lock to register and spawn the servers. Re-check that
         // nothing started while we were preparing above.
         let mut handles_guard = self.handles.lock().await;
@@ -81,20 +104,29 @@ impl ServerManager {
         }
 
         // Start servers
-        let config_clone = config.clone();
-        let credentials_clone = credentials.clone();
-        let proxy_handle = tokio::spawn(run_proxy_server(config_clone, credentials_clone));
+        let proxy_handle = tokio::spawn(run_proxy_server(
+            proxy_listener,
+            config.clone(),
+            credentials.clone(),
+        ));
 
-        let config_clone = config.clone();
-        let pac_handle = tokio::spawn(run_pac_server(config_clone));
+        let pac_handle = tokio::spawn(run_pac_server(pac_listener, config.clone()));
 
-        // Apply PAC settings
-        apply_pac_settings(&config)?;
+        // On failure, tear the just-spawned servers down so we don't leak
+        // running tasks the manager isn't tracking.
+        let applied = match apply_pac_settings(&config) {
+            Ok(applied) => applied,
+            Err(err) => {
+                proxy_handle.abort();
+                pac_handle.abort();
+                return Err(err.context("Failed to apply system PAC settings"));
+            }
+        };
 
-        // Track active config so we can cleanly remove PAC settings on stop/quit
+        // Track the applied state so we can cleanly undo it on stop/quit
         {
-            let mut active_config_guard = self.active_config.lock().await;
-            *active_config_guard = Some(config.clone());
+            let mut applied_pac_guard = self.applied_pac.lock().await;
+            *applied_pac_guard = Some(applied);
         }
 
         *handles_guard = Some(ServerHandles {
@@ -108,22 +140,29 @@ impl ServerManager {
 
     pub async fn stop(&self) -> Result<()> {
         let mut handles_guard = self.handles.lock().await;
-        let mut active_config_guard = self.active_config.lock().await;
+        let mut applied_pac_guard = self.applied_pac.lock().await;
 
         if let Some(handles) = handles_guard.take() {
             println!("[ServerManager] Stopping proxy and PAC servers...");
             handles.proxy_handle.abort();
             handles.pac_handle.abort();
-            if let Some(_config) = active_config_guard.take() {
+            // Await the aborted tasks: abort() only schedules cancellation, and
+            // the listeners (plus every in-flight connection, via the servers'
+            // JoinSets) are freed only when the futures are dropped. Without
+            // this, a subsequent start() can lose a race for the port against
+            // the old listener.
+            let _ = handles.proxy_handle.await;
+            let _ = handles.pac_handle.await;
+            if let Some(applied) = applied_pac_guard.take() {
                 println!("[ServerManager] Removing PAC settings before fully stopping");
-                if let Err(err) = crate::pac_settings::commands::remove_pac_settings() {
+                if let Err(err) = remove_pac_settings(&applied) {
                     println!(
                         "[ServerManager] Failed to remove system PAC settings: {}",
                         err
                     );
                 }
             } else {
-                println!("[ServerManager] No active config tracked; skipping PAC removal");
+                println!("[ServerManager] No PAC settings tracked; skipping PAC removal");
             }
             println!("[ServerManager] Servers stopped successfully");
         } else {
@@ -141,8 +180,6 @@ impl ServerManager {
                 err
             );
         }
-        // Small delay to ensure cleanup
-        tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
         self.start(app_handle, master_key).await
     }
 

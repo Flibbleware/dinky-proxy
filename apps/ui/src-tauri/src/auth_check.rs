@@ -5,6 +5,7 @@ use tokio::net::TcpStream;
 use crate::config::{Config, ProxyProtocol};
 use crate::credentials::{build_auth_header, Credentials};
 use crate::net::{with_timeout, CONNECT_TIMEOUT, HANDSHAKE_TIMEOUT};
+use crate::proxy_server::connect_status_code;
 use crate::socks::connect_via_socks5;
 
 pub async fn test_proxy_auth(config: &Config, credentials: &Credentials) -> Result<()> {
@@ -54,7 +55,10 @@ async fn test_http_proxy(config: &Config, credentials: &Credentials) -> Result<(
 
     println!("Proxy response: {}", response_line.trim());
 
-    if response_line.contains("200") {
+    if matches!(
+        connect_status_code(response_line.as_bytes()),
+        Some(200..=299)
+    ) {
         println!("Proxy authentication OK ✓\n");
         Ok(())
     } else {

@@ -5,6 +5,7 @@ use tokio::fs;
 use tokio::io::{AsyncBufReadExt, AsyncReadExt, AsyncWriteExt, BufReader};
 use tokio::net::{TcpListener, TcpStream};
 use tokio::sync::Semaphore;
+use tokio::task::JoinSet;
 
 use crate::config::Config;
 use crate::net::{with_timeout, CLIENT_REQUEST_TIMEOUT};
@@ -19,27 +20,39 @@ const MAX_CONCURRENT_PAC_CONNECTIONS: usize = 64;
 /// no newline to exhaust memory.
 const MAX_REQUEST_BYTES: u64 = 8 * 1024;
 
-pub async fn run_pac_server(config: Config) -> Result<()> {
-    let listener = TcpListener::bind(("127.0.0.1", config.pac_port)).await?;
-    println!("PAC server running on http://localhost:{}", config.pac_port);
+/// Serve the PAC file on an already-bound listener. Binding is the caller's job
+/// so that a port conflict fails `ServerManager::start` loudly, rather than
+/// dying inside a spawned task while the app reports the server as running.
+pub async fn run_pac_server(listener: TcpListener, config: Config) -> Result<()> {
+    println!("PAC server running on http://{}", listener.local_addr()?);
 
     let semaphore = Arc::new(Semaphore::new(MAX_CONCURRENT_PAC_CONNECTIONS));
+    let config = Arc::new(config);
+
+    // Same pattern as the proxy server: tasks in a JoinSet die with this
+    // future, so a stopped server stops serving immediately.
+    let mut connections = JoinSet::new();
 
     loop {
-        let (socket, addr) = listener.accept().await?;
-        let permit = Arc::clone(&semaphore).acquire_owned().await?;
-        let config = config.clone();
+        tokio::select! {
+            accepted = listener.accept() => {
+                let (socket, addr) = accepted?;
+                let permit = Arc::clone(&semaphore).acquire_owned().await?;
+                let config = Arc::clone(&config);
 
-        tokio::spawn(async move {
-            let _permit = permit; // held until the response is sent
-            if let Err(err) = handle_pac_connection(socket, config).await {
-                eprintln!("PAC client {} error: {:?}", addr, err);
+                connections.spawn(async move {
+                    let _permit = permit; // held until the response is sent
+                    if let Err(err) = handle_pac_connection(socket, config).await {
+                        eprintln!("PAC client {} error: {:?}", addr, err);
+                    }
+                });
             }
-        });
+            Some(_) = connections.join_next() => {}
+        }
     }
 }
 
-async fn handle_pac_connection(socket: TcpStream, config: Config) -> Result<()> {
+async fn handle_pac_connection(socket: TcpStream, config: Arc<Config>) -> Result<()> {
     let (client_read, mut client_write) = socket.into_split();
     let mut reader = BufReader::new(client_read);
 
