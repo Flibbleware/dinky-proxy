@@ -243,7 +243,7 @@ async fn handle_connect(
 /// Extract the status code from a proxy's CONNECT response status line, e.g.
 /// `b"HTTP/1.1 200 Connection established\r\n"` -> `Some(200)`. Returns `None`
 /// for an empty or unparseable line.
-fn connect_status_code(response_line: &[u8]) -> Option<u16> {
+pub(crate) fn connect_status_code(response_line: &[u8]) -> Option<u16> {
     String::from_utf8_lossy(response_line)
         .split_whitespace()
         .nth(1)
