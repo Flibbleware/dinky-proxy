@@ -87,6 +87,29 @@ test('adds a domain as a pill on Enter', async ({ page, pageUrl }) => {
   await expect(domainsInput).toHaveValue('')
 })
 
+test('normalizes a pasted URL down to its domain', async ({ page, pageUrl }) => {
+  await page.goto(pageUrl)
+
+  const domainsInput = page.getByLabel('Domains')
+  await domainsInput.fill('https://www.fakedomain.com/programming')
+  await domainsInput.press('Enter')
+
+  await expect(page.getByRole('button', { name: 'Remove fakedomain.com' })).toBeVisible()
+})
+
+test('preserves subdomains other than www when normalizing a pasted URL', async ({
+  page,
+  pageUrl,
+}) => {
+  await page.goto(pageUrl)
+
+  const domainsInput = page.getByLabel('Domains')
+  await domainsInput.fill('https://mail.fakedomain.com/mail/u/0')
+  await domainsInput.press('Enter')
+
+  await expect(page.getByRole('button', { name: 'Remove mail.fakedomain.com' })).toBeVisible()
+})
+
 test('removes a domain pill', async ({ page, pageUrl }) => {
   await page.goto(pageUrl)
 
