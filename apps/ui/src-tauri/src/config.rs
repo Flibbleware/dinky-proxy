@@ -4,7 +4,6 @@ use aes_gcm::{
 };
 use anyhow::{anyhow, bail, Context, Result};
 use base64::{engine::general_purpose::STANDARD, Engine as _};
-use rand::RngCore;
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use std::fs;
@@ -151,7 +150,7 @@ pub fn get_config_path(app_handle: &AppHandle) -> Result<PathBuf> {
 
 pub fn encrypt_config(data: &AppConfigPayload, key: &str) -> Result<EncryptedConfigFile> {
     let mut iv = [0u8; 12];
-    rand::thread_rng().fill_bytes(&mut iv);
+    getrandom::fill(&mut iv).map_err(|err| anyhow!("Failed to generate random IV: {err}"))?;
     let key_hash = Sha256::digest(key.as_bytes());
     let cipher = Aes256Gcm::new_from_slice(&key_hash)
         .map_err(|err| anyhow!("Failed to initialise AES-256-GCM cipher: {err}"))?;

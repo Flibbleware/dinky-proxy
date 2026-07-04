@@ -51,7 +51,7 @@ pub fn get_or_create_master_key() -> Result<String> {
         match entry.get_password() {
             Ok(key) => Ok(key),
             Err(keyring_core::Error::NoEntry) => {
-                let master_key = generate_master_key();
+                let master_key = generate_master_key()?;
                 entry
                     .set_password(&master_key)
                     .context("Failed to store master key in keychain")?;
@@ -63,9 +63,9 @@ pub fn get_or_create_master_key() -> Result<String> {
 }
 
 #[cfg(not(debug_assertions))]
-fn generate_master_key() -> String {
-    use rand::RngCore;
+fn generate_master_key() -> Result<String> {
     let mut bytes = [0u8; 32];
-    rand::thread_rng().fill_bytes(&mut bytes);
-    hex::encode(bytes)
+    getrandom::fill(&mut bytes)
+        .map_err(|err| anyhow!("Failed to generate random master key: {err}"))?;
+    Ok(hex::encode(bytes))
 }
