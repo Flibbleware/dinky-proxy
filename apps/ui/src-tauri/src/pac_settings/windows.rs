@@ -23,7 +23,6 @@ pub(super) fn apply_pac_settings_windows(config: &Config) -> Result<AppliedPacSe
 
     println!("[PAC][Windows] Applying PAC URL -> {}", pac_url);
 
-    // Snapshot the values we are about to overwrite, before touching anything.
     let snapshot = AppliedPacSettings {
         previous_auto_config_url: query_reg_string("AutoConfigURL"),
         previous_auto_detect: query_reg_dword("AutoDetect"),

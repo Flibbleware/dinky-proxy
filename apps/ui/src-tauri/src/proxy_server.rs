@@ -86,9 +86,6 @@ pub async fn run_proxy_server(
 
     let semaphore = Arc::new(Semaphore::new(MAX_CONCURRENT_CONNECTIONS));
 
-    // Shared state is wrapped in Arcs once, so each accepted connection clones
-    // a pointer rather than deep-copying the config and re-encoding the auth
-    // header.
     let config = Arc::new(config);
     let credentials = Arc::new(credentials);
     let auth_header = Arc::new(build_auth_header(&credentials));

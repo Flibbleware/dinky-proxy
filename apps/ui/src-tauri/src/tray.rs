@@ -34,8 +34,8 @@ pub(crate) fn build_tray_menu(
 
 fn render_icon(is_active: bool) -> RgbaImage {
     let icon_bytes = include_bytes!("../../public/pac_logo.png");
-    // `expect` is safe: the PNG is embedded at compile time, so a decode
-    // failure is a build defect, not a runtime condition.
+    // The PNG is embedded at compile time, so a decode failure is a build
+    // defect, not a runtime condition.
     let mut img = image::load_from_memory(icon_bytes)
         .expect("Failed to load icon")
         .to_rgba8();
@@ -61,8 +61,7 @@ fn render_icon(is_active: bool) -> RgbaImage {
     img
 }
 
-/// Both icon variants are rendered once and cached; tray updates on every
-/// start/stop would otherwise re-decode the PNG and redraw the badge each time.
+/// Cached because the tray re-requests an icon on every start/stop toggle.
 fn icon_image(is_active: bool) -> &'static RgbaImage {
     static INACTIVE: OnceLock<RgbaImage> = OnceLock::new();
     static ACTIVE: OnceLock<RgbaImage> = OnceLock::new();

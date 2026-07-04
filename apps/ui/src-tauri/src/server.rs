@@ -112,8 +112,8 @@ impl ServerManager {
 
         let pac_handle = tokio::spawn(run_pac_server(pac_listener, config.clone()));
 
-        // Apply PAC settings; if this fails, tear the just-spawned servers
-        // down so we don't leak running tasks the manager isn't tracking.
+        // On failure, tear the just-spawned servers down so we don't leak
+        // running tasks the manager isn't tracking.
         let applied = match apply_pac_settings(&config) {
             Ok(applied) => applied,
             Err(err) => {

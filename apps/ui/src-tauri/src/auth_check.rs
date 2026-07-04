@@ -55,9 +55,6 @@ async fn test_http_proxy(config: &Config, credentials: &Credentials) -> Result<(
 
     println!("Proxy response: {}", response_line.trim());
 
-    // Parse the status code out of the line rather than substring-matching:
-    // "contains 200" would accept a 407 whose reason phrase happens to contain
-    // "200" and reject nothing it shouldn't, hiding real auth failures.
     if matches!(
         connect_status_code(response_line.as_bytes()),
         Some(200..=299)
