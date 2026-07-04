@@ -24,7 +24,8 @@ pub(super) fn apply_pac_settings_windows(config: &Config) -> Result<AppliedPacSe
     println!("[PAC][Windows] Applying PAC URL -> {}", pac_url);
 
     let snapshot = AppliedPacSettings {
-        previous_auto_config_url: query_reg_string("AutoConfigURL"),
+        previous_auto_config_url: query_reg_string("AutoConfigURL")
+            .filter(|url| !is_own_pac_url(url)),
         previous_auto_detect: query_reg_dword("AutoDetect"),
     };
 
@@ -64,6 +65,13 @@ pub(super) fn apply_pac_settings_windows(config: &Config) -> Result<AppliedPacSe
     // 3. Flush DNS (optional)
     // -------------------------
     flush_dns();
+
+    // -------------------------
+    // 4. Refresh WinINET so consumers pick the new settings up immediately
+    //    instead of whenever they next re-read the registry
+    // -------------------------
+    refresh_wininet_settings();
+    println!("[PAC][Windows] WinINET refreshed.");
 
     Ok(snapshot)
 }
@@ -167,6 +175,10 @@ fn query_reg_value(name: &str) -> Option<(String, String)> {
         return Some((reg_type.to_string(), value.trim_start().to_string()));
     }
     None
+}
+
+fn is_own_pac_url(url: &str) -> bool {
+    url.starts_with("http://localhost:") && url.ends_with("/proxy.pac")
 }
 
 fn query_reg_string(name: &str) -> Option<String> {
