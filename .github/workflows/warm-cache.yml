@@ -1,0 +1,23 @@
+name: Warm build cache
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - pnpm-lock.yaml
+      - apps/ui/src-tauri/Cargo.lock
+
+permissions:
+  contents: read
+
+concurrency:
+  group: warm-cache
+  cancel-in-progress: true
+
+jobs:
+  warm:
+    permissions:
+      contents: read
+    uses: ./.github/workflows/build-steps.yml
+    with:
+      upload-artifacts: false
