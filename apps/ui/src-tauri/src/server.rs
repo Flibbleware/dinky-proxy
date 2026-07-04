@@ -44,9 +44,10 @@ impl ServerManager {
 
         println!("[ServerManager] Starting proxy and PAC servers...");
 
-        // if misconfigured handle without holding the `handles` lock so
-        // concurrent status checks, stops, and config saves stay responsive
-        // instead of serializing behind it and freezing the UI.
+        // Prepare config and validate proxy auth without holding the `handles`
+        // lock, so concurrent status checks, stops, and config saves stay
+        // responsive instead of serializing behind it and freezing the UI on a
+        // misconfigured proxy.
 
         // Load config
         let config_payload = crate::config::load_config(&app_handle, &master_key)
