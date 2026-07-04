@@ -73,12 +73,15 @@ fn is_valid_header_value(value: &str) -> bool {
     value.chars().all(|c| c == '\t' || !c.is_ascii_control())
 }
 
-pub async fn run_proxy_server(config: Config, credentials: Credentials) -> Result<()> {
-    let listener = TcpListener::bind(("127.0.0.1", config.local_proxy_port)).await?;
-    println!(
-        "Proxy wrapper running on http://localhost:{}",
-        config.local_proxy_port
-    );
+/// Serve the proxy on an already-bound listener. Binding is the caller's job so
+/// that a port conflict fails `ServerManager::start` loudly, rather than dying
+/// inside a spawned task while the app reports the server as running.
+pub async fn run_proxy_server(
+    listener: TcpListener,
+    config: Config,
+    credentials: Credentials,
+) -> Result<()> {
+    println!("Proxy wrapper running on http://{}", listener.local_addr()?);
 
     let semaphore = Arc::new(Semaphore::new(MAX_CONCURRENT_CONNECTIONS));
 
@@ -670,10 +673,8 @@ mod tests {
             String::from_utf8(head).unwrap()
         });
 
-        // Reserve a free port for the proxy under test (bind-then-drop).
-        let port_probe = TcpListener::bind("127.0.0.1:0").await.unwrap();
-        let local_port = port_probe.local_addr().unwrap().port();
-        drop(port_probe);
+        let proxy_listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
+        let local_port = proxy_listener.local_addr().unwrap().port();
 
         let config = Config {
             proxy_host: "127.0.0.1".to_string(),
@@ -691,19 +692,9 @@ mod tests {
             password: "pass".to_string(),
         };
 
-        tokio::spawn(run_proxy_server(config, credentials));
+        tokio::spawn(run_proxy_server(proxy_listener, config, credentials));
 
-        let mut client = None;
-        for _ in 0..50 {
-            match TcpStream::connect(("127.0.0.1", local_port)).await {
-                Ok(stream) => {
-                    client = Some(stream);
-                    break;
-                }
-                Err(_) => tokio::time::sleep(Duration::from_millis(20)).await,
-            }
-        }
-        let mut client = client.expect("proxy server did not start");
+        let mut client = TcpStream::connect(("127.0.0.1", local_port)).await.unwrap();
 
         client
             .write_all(

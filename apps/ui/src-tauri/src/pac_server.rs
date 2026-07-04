@@ -19,9 +19,11 @@ const MAX_CONCURRENT_PAC_CONNECTIONS: usize = 64;
 /// no newline to exhaust memory.
 const MAX_REQUEST_BYTES: u64 = 8 * 1024;
 
-pub async fn run_pac_server(config: Config) -> Result<()> {
-    let listener = TcpListener::bind(("127.0.0.1", config.pac_port)).await?;
-    println!("PAC server running on http://localhost:{}", config.pac_port);
+/// Serve the PAC file on an already-bound listener. Binding is the caller's job
+/// so that a port conflict fails `ServerManager::start` loudly, rather than
+/// dying inside a spawned task while the app reports the server as running.
+pub async fn run_pac_server(listener: TcpListener, config: Config) -> Result<()> {
+    println!("PAC server running on http://{}", listener.local_addr()?);
 
     let semaphore = Arc::new(Semaphore::new(MAX_CONCURRENT_PAC_CONNECTIONS));
 

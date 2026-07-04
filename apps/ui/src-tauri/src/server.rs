@@ -1,6 +1,7 @@
 use anyhow::{Context, Result};
 use std::sync::Arc;
 use tauri::{AppHandle, Manager};
+use tokio::net::TcpListener;
 use tokio::sync::Mutex;
 
 use crate::auth_check::test_proxy_auth;
@@ -71,6 +72,26 @@ impl ServerManager {
             .await
             .context("Proxy authentication failed")?;
 
+        // Bind both listeners before spawning anything, so a port conflict
+        // fails this command with an actionable error instead of dying silently
+        // inside a spawned task while the tray reports the server as running.
+        let proxy_listener = TcpListener::bind(("127.0.0.1", config.local_proxy_port))
+            .await
+            .with_context(|| {
+                format!(
+                    "Failed to bind local proxy port {} (is it already in use?)",
+                    config.local_proxy_port
+                )
+            })?;
+        let pac_listener = TcpListener::bind(("127.0.0.1", config.pac_port))
+            .await
+            .with_context(|| {
+                format!(
+                    "Failed to bind PAC server port {} (is it already in use?)",
+                    config.pac_port
+                )
+            })?;
+
         // take the lock to register and spawn the servers. Re-check that
         // nothing started while we were preparing above.
         let mut handles_guard = self.handles.lock().await;
@@ -81,12 +102,13 @@ impl ServerManager {
         }
 
         // Start servers
-        let config_clone = config.clone();
-        let credentials_clone = credentials.clone();
-        let proxy_handle = tokio::spawn(run_proxy_server(config_clone, credentials_clone));
+        let proxy_handle = tokio::spawn(run_proxy_server(
+            proxy_listener,
+            config.clone(),
+            credentials.clone(),
+        ));
 
-        let config_clone = config.clone();
-        let pac_handle = tokio::spawn(run_pac_server(config_clone));
+        let pac_handle = tokio::spawn(run_pac_server(pac_listener, config.clone()));
 
         // Apply PAC settings
         apply_pac_settings(&config)?;
