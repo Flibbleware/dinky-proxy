@@ -8,12 +8,14 @@ use crate::auth_check::test_proxy_auth;
 use crate::config::Config;
 use crate::credentials::load_credentials;
 use crate::pac_server::{run_pac_server, sync_default_pac};
-use crate::pac_settings::commands::apply_pac_settings;
+use crate::pac_settings::commands::{apply_pac_settings, remove_pac_settings, AppliedPacSettings};
 use crate::proxy_server::run_proxy_server;
 
 pub struct ServerManager {
     handles: Arc<Mutex<Option<ServerHandles>>>,
-    active_config: Arc<Mutex<Option<Config>>>,
+    // Snapshot of the system PAC state taken at apply time, so stop/quit can
+    // undo exactly what was changed even if the network environment moved on.
+    applied_pac: Arc<Mutex<Option<AppliedPacSettings>>>,
 }
 
 struct ServerHandles {
@@ -25,7 +27,7 @@ impl ServerManager {
     pub fn new() -> Self {
         Self {
             handles: Arc::new(Mutex::new(None)),
-            active_config: Arc::new(Mutex::new(None)),
+            applied_pac: Arc::new(Mutex::new(None)),
         }
     }
 
@@ -110,13 +112,21 @@ impl ServerManager {
 
         let pac_handle = tokio::spawn(run_pac_server(pac_listener, config.clone()));
 
-        // Apply PAC settings
-        apply_pac_settings(&config)?;
+        // Apply PAC settings; if this fails, tear the just-spawned servers
+        // down so we don't leak running tasks the manager isn't tracking.
+        let applied = match apply_pac_settings(&config) {
+            Ok(applied) => applied,
+            Err(err) => {
+                proxy_handle.abort();
+                pac_handle.abort();
+                return Err(err.context("Failed to apply system PAC settings"));
+            }
+        };
 
-        // Track active config so we can cleanly remove PAC settings on stop/quit
+        // Track the applied state so we can cleanly undo it on stop/quit
         {
-            let mut active_config_guard = self.active_config.lock().await;
-            *active_config_guard = Some(config.clone());
+            let mut applied_pac_guard = self.applied_pac.lock().await;
+            *applied_pac_guard = Some(applied);
         }
 
         *handles_guard = Some(ServerHandles {
@@ -130,7 +140,7 @@ impl ServerManager {
 
     pub async fn stop(&self) -> Result<()> {
         let mut handles_guard = self.handles.lock().await;
-        let mut active_config_guard = self.active_config.lock().await;
+        let mut applied_pac_guard = self.applied_pac.lock().await;
 
         if let Some(handles) = handles_guard.take() {
             println!("[ServerManager] Stopping proxy and PAC servers...");
@@ -143,16 +153,16 @@ impl ServerManager {
             // the old listener.
             let _ = handles.proxy_handle.await;
             let _ = handles.pac_handle.await;
-            if let Some(_config) = active_config_guard.take() {
+            if let Some(applied) = applied_pac_guard.take() {
                 println!("[ServerManager] Removing PAC settings before fully stopping");
-                if let Err(err) = crate::pac_settings::commands::remove_pac_settings() {
+                if let Err(err) = remove_pac_settings(&applied) {
                     println!(
                         "[ServerManager] Failed to remove system PAC settings: {}",
                         err
                     );
                 }
             } else {
-                println!("[ServerManager] No active config tracked; skipping PAC removal");
+                println!("[ServerManager] No PAC settings tracked; skipping PAC removal");
             }
             println!("[ServerManager] Servers stopped successfully");
         } else {
