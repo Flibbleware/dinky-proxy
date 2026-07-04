@@ -66,6 +66,13 @@ pub(super) fn apply_pac_settings_windows(config: &Config) -> Result<AppliedPacSe
     // -------------------------
     flush_dns();
 
+    // -------------------------
+    // 4. Refresh WinINET so consumers pick the new settings up immediately
+    //    instead of whenever they next re-read the registry
+    // -------------------------
+    refresh_wininet_settings();
+    println!("[PAC][Windows] WinINET refreshed.");
+
     Ok(snapshot)
 }
 
