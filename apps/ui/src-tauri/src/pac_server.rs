@@ -27,6 +27,7 @@ pub async fn run_pac_server(listener: TcpListener, config: Config) -> Result<()>
     println!("PAC server running on http://{}", listener.local_addr()?);
 
     let semaphore = Arc::new(Semaphore::new(MAX_CONCURRENT_PAC_CONNECTIONS));
+    let config = Arc::new(config);
 
     // Same pattern as the proxy server: tasks in a JoinSet die with this
     // future, so a stopped server stops serving immediately.
@@ -37,7 +38,7 @@ pub async fn run_pac_server(listener: TcpListener, config: Config) -> Result<()>
             accepted = listener.accept() => {
                 let (socket, addr) = accepted?;
                 let permit = Arc::clone(&semaphore).acquire_owned().await?;
-                let config = config.clone();
+                let config = Arc::clone(&config);
 
                 connections.spawn(async move {
                     let _permit = permit; // held until the response is sent
@@ -51,7 +52,7 @@ pub async fn run_pac_server(listener: TcpListener, config: Config) -> Result<()>
     }
 }
 
-async fn handle_pac_connection(socket: TcpStream, config: Config) -> Result<()> {
+async fn handle_pac_connection(socket: TcpStream, config: Arc<Config>) -> Result<()> {
     let (client_read, mut client_write) = socket.into_split();
     let mut reader = BufReader::new(client_read);
 

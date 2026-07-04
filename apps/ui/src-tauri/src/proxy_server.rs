@@ -86,6 +86,13 @@ pub async fn run_proxy_server(
 
     let semaphore = Arc::new(Semaphore::new(MAX_CONCURRENT_CONNECTIONS));
 
+    // Shared state is wrapped in Arcs once, so each accepted connection clones
+    // a pointer rather than deep-copying the config and re-encoding the auth
+    // header.
+    let config = Arc::new(config);
+    let credentials = Arc::new(credentials);
+    let auth_header = Arc::new(build_auth_header(&credentials));
+
     // Connection tasks live in a JoinSet rather than being detached, so that
     // when this future is dropped (ServerManager::stop aborts it) every
     // in-flight connection and tunnel is aborted with it, instead of surviving
@@ -103,9 +110,9 @@ pub async fn run_proxy_server(
                 // without bound.
                 let permit = Arc::clone(&semaphore).acquire_owned().await?;
 
-                let config = config.clone();
-                let credentials = credentials.clone();
-                let auth_header = build_auth_header(&credentials);
+                let config = Arc::clone(&config);
+                let credentials = Arc::clone(&credentials);
+                let auth_header = Arc::clone(&auth_header);
 
                 connections.spawn(async move {
                     let _permit = permit; // held for the connection's lifetime
@@ -122,9 +129,9 @@ pub async fn run_proxy_server(
 
 async fn handle_client(
     socket: TcpStream,
-    config: Config,
-    credentials: Credentials,
-    auth_header: String,
+    config: Arc<Config>,
+    credentials: Arc<Credentials>,
+    auth_header: Arc<String>,
 ) -> Result<()> {
     let (client_read, client_write) = socket.into_split();
     let mut reader = BufReader::new(client_read);

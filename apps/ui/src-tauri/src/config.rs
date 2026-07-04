@@ -265,14 +265,22 @@ pub(crate) fn restrict_to_owner(path: &std::path::Path) -> std::io::Result<()> {
     Ok(())
 }
 
-fn coerce_number(value: Option<&serde_json::Value>, fallback: u16) -> u16 {
-    match value {
+/// Coerce a JSON value to a port number, falling back on anything unusable —
+/// including 0, which would bind an arbitrary ephemeral port while the PAC
+/// file and system settings advertise port 0.
+fn coerce_port(value: Option<&serde_json::Value>, fallback: u16) -> u16 {
+    let port = match value {
         Some(serde_json::Value::Number(n)) => n
             .as_u64()
             .and_then(|v| u16::try_from(v).ok())
             .unwrap_or(fallback),
         Some(serde_json::Value::String(s)) => s.parse().unwrap_or(fallback),
         _ => fallback,
+    };
+    if port == 0 {
+        fallback
+    } else {
+        port
     }
 }
 
@@ -294,7 +302,7 @@ pub fn normalize_config_payload(payload: &serde_json::Value) -> AppConfigPayload
         .unwrap_or(ProxyProtocol::Http);
 
     AppConfigPayload {
-        port: coerce_number(obj.get("port"), DEFAULT_LOCAL_PROXY_PORT),
+        port: coerce_port(obj.get("port"), DEFAULT_LOCAL_PROXY_PORT),
         bypass_domains: obj
             .get("bypassDomains")
             .and_then(|v| v.as_array())
@@ -310,8 +318,8 @@ pub fn normalize_config_payload(payload: &serde_json::Value) -> AppConfigPayload
             .and_then(|v| v.as_str())
             .map(|s| s.to_string())
             .unwrap_or_else(|| DEFAULT_PROXY_HOST.to_string()),
-        proxy_port: coerce_number(obj.get("proxyPort"), DEFAULT_PROXY_PORT),
-        pac_server_port: coerce_number(obj.get("pacServerPort"), DEFAULT_PAC_PORT),
+        proxy_port: coerce_port(obj.get("proxyPort"), DEFAULT_PROXY_PORT),
+        pac_server_port: coerce_port(obj.get("pacServerPort"), DEFAULT_PAC_PORT),
         username: obj
             .get("username")
             .and_then(|v| v.as_str())
@@ -376,6 +384,15 @@ mod tests {
             result.is_err(),
             "decryption of corrupted payload should fail"
         );
+    }
+
+    #[test]
+    fn port_zero_falls_back_to_default() {
+        let payload = serde_json::json!({ "port": 0, "proxyPort": "0", "pacServerPort": 0 });
+        let normalized = normalize_config_payload(&payload);
+        assert_eq!(normalized.port, 8888);
+        assert_eq!(normalized.proxy_port, 8080);
+        assert_eq!(normalized.pac_server_port, 8000);
     }
 
     #[test]
