@@ -177,12 +177,6 @@ fn query_reg_value(name: &str) -> Option<(String, String)> {
     None
 }
 
-/// A pre-existing AutoConfigURL pointing at this app's own PAC server is
-/// leftover state from a run that never cleaned up (crash, force quit,
-/// Ctrl+C on `tauri dev`). Snapshotting it as the user's setting would make
-/// every subsequent removal "restore" it, so the URL would never be cleaned.
-/// Matched by shape rather than against the current `pac_url()` because the
-/// configured PAC port may have changed since the run that leaked it.
 fn is_own_pac_url(url: &str) -> bool {
     url.starts_with("http://localhost:") && url.ends_with("/proxy.pac")
 }
