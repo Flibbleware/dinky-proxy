@@ -34,3 +34,5 @@ export const useInitialisation = () => {
   if (!ctx) throw new Error('useInitialisation must be used within InitialisationProvider')
   return ctx
 }
+
+export const useSettingsLocked = () => useInitialisation().isRunning === true
