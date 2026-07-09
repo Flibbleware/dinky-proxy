@@ -44,7 +44,8 @@
         "useSelfClosingElements": "error"
       },
       "suspicious": {
-        "noArrayIndexKey": "error"
+        "noArrayIndexKey": "error",
+        "noUnnecessaryConditions": "error"
       },
       "complexity": {
         "noUselessFragments": "error"
@@ -54,6 +55,8 @@
         "useHookAtTopLevel": "error"
       },
       "nursery": {
+        "noFloatingPromises": "error",
+        "useExhaustiveSwitchCases": "error",
         "useSortedClasses": {
           "level": "warn",
           "options": {

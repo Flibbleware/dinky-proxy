@@ -5,8 +5,8 @@ const UI_DIR = path.join(__dirname, 'apps/ui')
 // Pre-commit checks run against staged files only (see .husky/pre-commit).
 // `biome check --write` formats, applies safe lint fixes, and organizes imports;
 // it exits non-zero on unfixable lint errors, which blocks the commit.
-// Type-aware ESLint rules and `tsc` are not run here — they need the whole
-// program, so they stay in CI (see .github/workflows/frontend.yml).
+// `tsc` is not run here — it needs the whole program, so it stays in CI
+// (see .github/workflows/frontend.yml).
 module.exports = {
   // Biome must run with its cwd inside apps/ui: invoked from the repo root it
   // treats the root as an implicit project root and rejects apps/ui/biome.json
