@@ -1,31 +1,19 @@
 import { createContext, useContext } from 'react'
-import type { ConfigurationValues } from '@/screens/configuration/types'
+import type { ConfigurationValues } from '@/commands'
 
-type AppContextValueBase = {
+export type LoadState =
+  | { status: 'loading'; config: null; isRunning: null }
+  | { status: 'ready'; config: ConfigurationValues; isRunning: boolean }
+  | { status: 'failed'; config: null; isRunning: null }
+
+export type AppContextValue = {
+  state: LoadState
   isTogglingServer: boolean
   setIsRunning: (value: boolean) => void
+  setConfig: (config: ConfigurationValues) => void
+  retryInitialisation: () => void
   toggleServer: () => Promise<void>
 }
-
-type AppContextValueLoading = {
-  status: 'loading'
-  config: ConfigurationValues | null
-  isRunning: null
-} & AppContextValueBase
-
-type AppContextValueReady = {
-  status: 'ready'
-  config: ConfigurationValues
-  isRunning: boolean
-} & AppContextValueBase
-
-type AppContextValueFailed = {
-  status: 'failed'
-  config: null
-  isRunning: null
-} & AppContextValueBase
-
-export type AppContextValue = AppContextValueLoading | AppContextValueReady | AppContextValueFailed
 
 export const AppContext = createContext<AppContextValue | null>(null)
 
@@ -35,4 +23,4 @@ export const useInitialisation = () => {
   return ctx
 }
 
-export const useSettingsLocked = () => useInitialisation().isRunning === true
+export const useSettingsLocked = () => useInitialisation().state.isRunning === true

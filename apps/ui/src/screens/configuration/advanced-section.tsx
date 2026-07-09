@@ -42,7 +42,7 @@ const AdvancedConfigurationSection = ({ field, errors }: Props) => {
           </FieldLabel>
           <FieldContent>
             <Input
-              {...field('port', { valueAsNumber: true })}
+              {...field('port')}
               type="number"
               inputMode="numeric"
               autoComplete="off"
@@ -61,7 +61,7 @@ const AdvancedConfigurationSection = ({ field, errors }: Props) => {
           </FieldLabel>
           <FieldContent>
             <Input
-              {...field('pacServerPort', { valueAsNumber: true })}
+              {...field('pacServerPort')}
               type="number"
               inputMode="numeric"
               autoComplete="off"

@@ -1,15 +1,9 @@
+import type { Control } from 'react-hook-form'
 import type { z } from 'zod'
-import type { configurationSchema, proxyProtocolSchema } from './schema'
+import type { configurationSchema } from './schema'
 
 export type ConfigurationFormRecord = z.input<typeof configurationSchema>
 
-export type ConfigurationValues = {
-  port: number
-  bypassDomains: string[]
-  proxyProtocol: z.infer<typeof proxyProtocolSchema>
-  proxyHost: string
-  proxyPort: number
-  pacServerPort: number
-  username: string
-  password: string
-}
+export type ConfigurationParsed = z.output<typeof configurationSchema>
+
+export type ConfigurationControl = Control<ConfigurationFormRecord, unknown, ConfigurationParsed>

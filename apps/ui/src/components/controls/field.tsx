@@ -56,7 +56,7 @@ const FieldLabel = <TFieldValues extends Record<string, unknown> = Record<string
       <Tooltip>
         <TooltipTrigger
           type="button"
-          className="cursor-pointer rounded-full text-slate-500 outline-none hover:text-slate-300 focus-visible:text-slate-300 focus-visible:ring-[3px] focus-visible:ring-ring/50"
+          className="cursor-pointer rounded-full text-muted-foreground outline-none hover:text-foreground focus-visible:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50"
           aria-label={
             typeof children === 'string' ? `More information about ${children}` : 'More information'
           }
@@ -73,15 +73,16 @@ type FieldErrorProps = ComponentProps<'div'> & {
   error?: { message?: string } | undefined
 }
 
-const FieldError = ({ className, children, error, ...props }: FieldErrorProps) => {
-  const content = children ?? error?.message
-  if (!content) return null
-
-  return (
-    <div role="alert" className={cn('font-normal text-destructive text-sm', className)} {...props}>
-      {content}
-    </div>
-  )
-}
+// Always rendered (hidden when empty) so inputs' aria-describedby references resolve
+// even before an error appears, and the alert region exists prior to content insertion.
+const FieldError = ({ className, children, error, ...props }: FieldErrorProps) => (
+  <div
+    role="alert"
+    className={cn('font-normal text-destructive text-sm empty:hidden', className)}
+    {...props}
+  >
+    {children ?? error?.message}
+  </div>
+)
 
 export { Field, FieldContent, FieldError, FieldLabel, FieldSet }

@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-export const proxyProtocolSchema = z.enum(['http', 'socks5'])
+const proxyProtocolSchema = z.enum(['http', 'socks5'])
 
 const portSchema = (label: string) =>
   z
@@ -21,6 +21,7 @@ export const configurationSchema = z.object({
   proxyProtocol: proxyProtocolSchema,
   proxyHost: z.string().trim().min(1, 'Proxy host is required'),
   username: z.string().trim().min(1, 'Proxy username is required'),
-  password: z.string().trim().min(1, 'Proxy password is required'),
+  // No trim: leading/trailing whitespace can be a legitimate part of a password.
+  password: z.string().min(1, 'Proxy password is required'),
   bypassList: z.string().trim().min(1, 'Enter at least one domain'),
 })

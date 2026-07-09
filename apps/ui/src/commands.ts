@@ -1,5 +1,4 @@
 import { invoke } from '@tauri-apps/api/core'
-import type { ConfigurationValues } from '@/screens/configuration/types'
 
 const Command = {
   LoadConfig: 'load_config_command',
@@ -8,6 +7,19 @@ const Command = {
   StopServer: 'stop_server_command',
   IsServerRunning: 'is_server_running_command',
 } as const
+
+export type ProxyProtocol = 'http' | 'socks5'
+
+export type ConfigurationValues = {
+  port: number
+  bypassDomains: string[]
+  proxyProtocol: ProxyProtocol
+  proxyHost: string
+  proxyPort: number
+  pacServerPort: number
+  username: string
+  password: string
+}
 
 type SaveConfigResult = { path: string; restarted: boolean }
 

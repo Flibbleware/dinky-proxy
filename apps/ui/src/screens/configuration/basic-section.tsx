@@ -1,22 +1,22 @@
-import type { Control, FieldErrors } from 'react-hook-form'
+import type { FieldErrors } from 'react-hook-form'
 import { DomainPillInput } from '@/components/controls/domain-pill-input'
 import { Field, FieldContent, FieldError, FieldLabel, FieldSet } from '@/components/controls/field'
 import { Input } from '@/components/controls/input'
 import { useSettingsLocked } from '@/useInitialisation'
-import type { ConfigurationFormRecord } from './types'
+import type { ConfigurationControl, ConfigurationFormRecord } from './types'
 import type { createFieldHelper } from './utils'
 
 type Props = {
   field: ReturnType<typeof createFieldHelper<ConfigurationFormRecord>>
   errors: FieldErrors<ConfigurationFormRecord>
-  control: Control<ConfigurationFormRecord>
+  control: ConfigurationControl
 }
 
 const BasicConfigurationSection = ({ field, errors, control }: Props) => {
   const disabled = useSettingsLocked()
 
   return (
-    <FieldSet>
+    <FieldSet disabled={disabled}>
       <legend className="sr-only">Proxy settings</legend>
       <div className="grid grid-cols-[1fr_auto] items-start gap-3">
         <Field>
@@ -32,7 +32,6 @@ const BasicConfigurationSection = ({ field, errors, control }: Props) => {
               type="text"
               autoComplete="off"
               aria-invalid={!!errors.proxyHost}
-              disabled={disabled}
             />
             <FieldError id="proxyHost-error" error={errors.proxyHost} />
           </FieldContent>
@@ -42,12 +41,11 @@ const BasicConfigurationSection = ({ field, errors, control }: Props) => {
           <FieldLabel<ConfigurationFormRecord> htmlFor="proxyPort">Port</FieldLabel>
           <FieldContent>
             <Input
-              {...field('proxyPort', { valueAsNumber: true })}
+              {...field('proxyPort')}
               type="number"
               inputMode="numeric"
               autoComplete="off"
               aria-invalid={!!errors.proxyPort}
-              disabled={disabled}
             />
             <FieldError id="proxyPort-error" error={errors.proxyPort} />
           </FieldContent>
@@ -64,7 +62,6 @@ const BasicConfigurationSection = ({ field, errors, control }: Props) => {
               autoComplete="off"
               spellCheck={false}
               aria-invalid={!!errors.username}
-              disabled={disabled}
             />
             <FieldError id="username-error" error={errors.username} />
           </FieldContent>
@@ -83,7 +80,6 @@ const BasicConfigurationSection = ({ field, errors, control }: Props) => {
               type="password"
               autoComplete="new-password"
               aria-invalid={!!errors.password}
-              disabled={disabled}
             />
             <FieldError id="password-error" error={errors.password} />
           </FieldContent>

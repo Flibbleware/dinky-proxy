@@ -1,9 +1,8 @@
 import type { FieldPath, RegisterOptions, UseFormRegister } from 'react-hook-form'
 import { toast } from 'sonner'
-import { saveConfig } from '@/commands'
-import { parseDomains, serializeDomains } from './domains'
-import { configurationSchema } from './schema'
-import type { ConfigurationFormRecord, ConfigurationValues } from './types'
+import { type ConfigurationValues, saveConfig } from '@/commands'
+import { parseDomains, serializeDomains } from '@/lib/domains'
+import type { ConfigurationFormRecord, ConfigurationParsed } from './types'
 
 export const createFieldHelper =
   <TFieldValues extends Record<string, unknown>>(register: UseFormRegister<TFieldValues>) =>
@@ -13,33 +12,27 @@ export const createFieldHelper =
     ...register(name, options),
   })
 
-export const getFormDefaults = (initialValues: ConfigurationValues): ConfigurationFormRecord => ({
-  ...initialValues,
-  bypassList: serializeDomains(initialValues.bypassDomains),
+export const getFormDefaults = ({
+  bypassDomains,
+  ...values
+}: ConfigurationValues): ConfigurationFormRecord => ({
+  ...values,
+  bypassList: serializeDomains(bypassDomains),
 })
 
-const onSubmit = async (values: ConfigurationValues) => {
-  void saveConfig(values)
-}
-
 export const createHandleValidSubmit =
-  (reset: (values: ConfigurationFormRecord) => void) => async (values: ConfigurationFormRecord) => {
-    const validated = configurationSchema.parse(values)
-    const bypassDomains = parseDomains(validated.bypassList)
+  (
+    reset: (values: ConfigurationFormRecord) => void,
+    onSaved: (config: ConfigurationValues) => void,
+  ) =>
+  async ({ bypassList, ...values }: ConfigurationParsed) => {
+    const config: ConfigurationValues = { ...values, bypassDomains: parseDomains(bypassList) }
 
     try {
-      await onSubmit({
-        port: validated.port,
-        bypassDomains,
-        proxyProtocol: validated.proxyProtocol,
-        proxyHost: validated.proxyHost,
-        proxyPort: validated.proxyPort,
-        pacServerPort: validated.pacServerPort,
-        username: validated.username,
-        password: validated.password,
-      })
+      await saveConfig(config)
+      onSaved(config)
       toast.success('Configuration Saved')
-      reset(values)
+      reset({ ...values, bypassList })
     } catch (error) {
       console.error('Failed to save configuration', error)
       toast.error('Failed to save configuration')
