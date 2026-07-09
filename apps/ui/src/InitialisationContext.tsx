@@ -1,4 +1,4 @@
-import { type PropsWithChildren, useCallback, useEffect, useMemo, useState } from 'react'
+import { type PropsWithChildren, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import {
   type ConfigurationValues,
@@ -7,50 +7,44 @@ import {
   startServer,
   stopServer,
 } from '@/commands'
-import { AppContext, type AppContextValue, type LoadState } from './useInitialisation'
+import { AppContext, type LoadState } from './useInitialisation'
 
 const INITIAL_STATE: LoadState = { status: 'loading', config: null, isRunning: null }
+
+const load = async (setState: (state: LoadState) => void, signal?: AbortSignal) => {
+  try {
+    const [config, isRunning] = await Promise.all([loadConfig(), isServerRunning()])
+    if (signal?.aborted) return
+    setState({ status: 'ready', config, isRunning })
+  } catch (error) {
+    if (signal?.aborted) return
+    console.error('Failed to load configuration', error)
+    setState({ status: 'failed', config: null, isRunning: null })
+  }
+}
 
 export const InitialisationProvider = ({ children }: PropsWithChildren) => {
   const [state, setState] = useState<LoadState>(INITIAL_STATE)
   const [isTogglingServer, setIsTogglingServer] = useState(false)
 
-  const load = useCallback(async (signal?: AbortSignal) => {
-    try {
-      const [config, isRunning] = await Promise.all([loadConfig(), isServerRunning()])
-      if (signal?.aborted) return
-      setState({ status: 'ready', config, isRunning })
-    } catch (error) {
-      if (signal?.aborted) return
-      console.error('Failed to load configuration', error)
-      setState({ status: 'failed', config: null, isRunning: null })
-    }
-  }, [])
-
   useEffect(() => {
     const controller = new AbortController()
-    void load(controller.signal)
+    void load(setState, controller.signal)
     return () => controller.abort()
-  }, [load])
+  }, [])
 
-  const retryInitialisation = useCallback(() => {
+  const retryInitialisation = () => {
     setState(INITIAL_STATE)
-    void load()
-  }, [load])
+    void load(setState)
+  }
 
-  const setIsRunning = useCallback(
-    (value: boolean) =>
-      setState((prev) => (prev.status === 'ready' ? { ...prev, isRunning: value } : prev)),
-    [],
-  )
+  const setIsRunning = (value: boolean) =>
+    setState((prev) => (prev.status === 'ready' ? { ...prev, isRunning: value } : prev))
 
-  const setConfig = useCallback(
-    (config: ConfigurationValues) =>
-      setState((prev) => (prev.status === 'ready' ? { ...prev, config } : prev)),
-    [],
-  )
+  const setConfig = (config: ConfigurationValues) =>
+    setState((prev) => (prev.status === 'ready' ? { ...prev, config } : prev))
 
-  const toggleServer = useCallback(async () => {
+  const toggleServer = async () => {
     if (state.status !== 'ready') return
     const stopping = state.isRunning
     setIsTogglingServer(true)
@@ -71,12 +65,20 @@ export const InitialisationProvider = ({ children }: PropsWithChildren) => {
     } finally {
       setIsTogglingServer(false)
     }
-  }, [state, setIsRunning])
+  }
 
-  const value = useMemo<AppContextValue>(
-    () => ({ state, isTogglingServer, setIsRunning, setConfig, retryInitialisation, toggleServer }),
-    [state, isTogglingServer, setIsRunning, setConfig, retryInitialisation, toggleServer],
+  return (
+    <AppContext
+      value={{
+        state,
+        isTogglingServer,
+        setIsRunning,
+        setConfig,
+        retryInitialisation,
+        toggleServer,
+      }}
+    >
+      {children}
+    </AppContext>
   )
-
-  return <AppContext value={value}>{children}</AppContext>
 }
