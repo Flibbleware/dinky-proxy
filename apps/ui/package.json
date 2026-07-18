@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "tauri dev",
     "dev:vite": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsr generate && tsc -b && vite build",
     "tauri:build": "tauri build",
     "tauri:icons": "tauri icon src-tauri/icons/icon.png --output src-tauri/icons && rm -rf src-tauri/icons/ios src-tauri/icons/android",
     "lint": "biome check .",
@@ -43,6 +43,6 @@
     "tailwindcss": "^4.3.1",
     "tree-kill": "^1.2.2",
     "typescript": "^6.0.3",
-    "vite": "^8.0.16"
+    "vite": "^8.1.5"
   }
 }
