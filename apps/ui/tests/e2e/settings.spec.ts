@@ -26,7 +26,7 @@ test('shows validation error for empty required field', async ({ page, pageUrl }
   // Save stays disabled until the form is dirty, so edit another field to enable submit
   // while leaving the required Host empty.
   await page.getByLabel('Port', { exact: true }).fill('8081')
-  await page.getByRole('button', { name: 'Save Configuration' }).click()
+  await page.getByRole('button', { name: 'Save' }).click()
 
   await expect(page.getByText('Proxy host is required')).toBeVisible()
   await expect(proxyHost).toHaveAttribute('aria-invalid', 'true')

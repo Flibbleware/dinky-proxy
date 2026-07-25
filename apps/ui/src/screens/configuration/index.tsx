@@ -1,10 +1,12 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { Button } from '@/components/controls/button'
 import { FormSection } from '@/components/forms/form-section'
 import ConfigurationActions from './actions'
 import AdvancedConfigurationSection from './advanced-section'
 import BasicConfigurationSection from './basic-section'
+import ConfigurationHeader from './header'
 import { configurationSchema } from './schema'
 import type { ConfigurationFormRecord, ConfigurationValues } from './types'
 import { createFieldHelper, createHandleValidSubmit, getFormDefaults } from './utils'
@@ -30,26 +32,36 @@ const Configuration = ({ initialValues }: Props) => {
 
   return (
     <form
-      className="flex flex-col gap-6"
+      className="flex flex-col gap-8"
       onSubmit={handleSubmit(createHandleValidSubmit(form.reset))}
     >
-      <FormSection id="configuration-fields" className="min-h-[324px]">
-        {showAdvanced ? (
-          <AdvancedConfigurationSection field={createFieldProps} errors={errors} />
-        ) : (
-          <BasicConfigurationSection
-            field={createFieldProps}
-            errors={errors}
-            control={form.control}
-          />
-        )}
-      </FormSection>
+      <ConfigurationHeader>
+        <ConfigurationActions control={form.control} />
+      </ConfigurationHeader>
 
-      <ConfigurationActions
-        showAdvanced={showAdvanced}
-        onToggleAdvanced={() => setShowAdvanced((v) => !v)}
-        control={form.control}
-      />
+      <div className="relative">
+        {/* Floated out of flow so the toggle doesn't widen the header-to-fields gap. */}
+        <Button
+          type="button"
+          onClick={() => setShowAdvanced((v) => !v)}
+          aria-controls="configuration-fields"
+          className="absolute -top-12 right-0"
+        >
+          {showAdvanced ? 'Basic' : 'Advanced'}
+        </Button>
+
+        <FormSection id="configuration-fields" className="min-h-[324px]">
+          {showAdvanced ? (
+            <AdvancedConfigurationSection field={createFieldProps} errors={errors} />
+          ) : (
+            <BasicConfigurationSection
+              field={createFieldProps}
+              errors={errors}
+              control={form.control}
+            />
+          )}
+        </FormSection>
+      </div>
     </form>
   )
 }
