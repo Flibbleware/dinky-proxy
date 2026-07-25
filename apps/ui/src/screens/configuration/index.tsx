@@ -34,15 +34,13 @@ const Configuration = ({ initialValues }: Props) => {
       className="flex flex-col gap-8"
       onSubmit={handleSubmit(createHandleValidSubmit(form.reset))}
     >
-      <ConfigurationHeader
-        actions={
-          <ConfigurationActions
-            showAdvanced={showAdvanced}
-            onToggleAdvanced={() => setShowAdvanced((v) => !v)}
-            control={form.control}
-          />
-        }
-      />
+      <ConfigurationHeader>
+        <ConfigurationActions
+          showAdvanced={showAdvanced}
+          onToggleAdvanced={() => setShowAdvanced((v) => !v)}
+          control={form.control}
+        />
+      </ConfigurationHeader>
 
       <FormSection id="configuration-fields" className="min-h-[324px]">
         {showAdvanced ? (
