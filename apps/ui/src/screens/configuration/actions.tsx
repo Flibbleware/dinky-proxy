@@ -23,23 +23,21 @@ const ConfigurationActions = ({ showAdvanced, onToggleAdvanced, control }: Props
   const isFormValid = configurationSchema.safeParse(watchedValues).success
 
   return (
-    <div className="flex items-center justify-between gap-3">
+    <div className="flex items-center gap-3">
       <Button type="button" onClick={onToggleAdvanced} aria-controls="configuration-fields">
         {showAdvanced ? 'Basic' : 'Advanced'}
       </Button>
-      <div className="flex items-center gap-3">
-        <Button
-          type="button"
-          onClick={toggleServer}
-          disabled={isRunning === null || isTogglingServer || !isFormValid}
-          className={isRunning ? 'bg-red-800 hover:bg-red-700' : ''}
-        >
-          {serverLabel(isRunning)}
-        </Button>
-        <Button type="submit" disabled={isSubmitting || !isDirty}>
-          {isSubmitting ? 'Saving...' : 'Save Configuration'}
-        </Button>
-      </div>
+      <Button type="submit" disabled={isSubmitting || !isDirty}>
+        {isSubmitting ? 'Saving...' : 'Save'}
+      </Button>
+      <Button
+        type="button"
+        onClick={toggleServer}
+        disabled={isRunning === null || isTogglingServer || !isFormValid}
+        className={isRunning ? 'bg-red-800 hover:bg-red-700' : ''}
+      >
+        {serverLabel(isRunning)}
+      </Button>
     </div>
   )
 }

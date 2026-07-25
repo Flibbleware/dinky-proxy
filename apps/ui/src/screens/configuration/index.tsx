@@ -5,6 +5,7 @@ import { FormSection } from '@/components/forms/form-section'
 import ConfigurationActions from './actions'
 import AdvancedConfigurationSection from './advanced-section'
 import BasicConfigurationSection from './basic-section'
+import ConfigurationHeader from './header'
 import { configurationSchema } from './schema'
 import type { ConfigurationFormRecord, ConfigurationValues } from './types'
 import { createFieldHelper, createHandleValidSubmit, getFormDefaults } from './utils'
@@ -30,9 +31,19 @@ const Configuration = ({ initialValues }: Props) => {
 
   return (
     <form
-      className="flex flex-col gap-6"
+      className="flex flex-col gap-8"
       onSubmit={handleSubmit(createHandleValidSubmit(form.reset))}
     >
+      <ConfigurationHeader
+        actions={
+          <ConfigurationActions
+            showAdvanced={showAdvanced}
+            onToggleAdvanced={() => setShowAdvanced((v) => !v)}
+            control={form.control}
+          />
+        }
+      />
+
       <FormSection id="configuration-fields" className="min-h-[324px]">
         {showAdvanced ? (
           <AdvancedConfigurationSection field={createFieldProps} errors={errors} />
@@ -44,12 +55,6 @@ const Configuration = ({ initialValues }: Props) => {
           />
         )}
       </FormSection>
-
-      <ConfigurationActions
-        showAdvanced={showAdvanced}
-        onToggleAdvanced={() => setShowAdvanced((v) => !v)}
-        control={form.control}
-      />
     </form>
   )
 }
