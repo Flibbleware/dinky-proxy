@@ -1,7 +1,7 @@
 {
   "name": "dinkyproxy",
   "private": true,
-  "packageManager": "pnpm@11.6.0",
+  "packageManager": "pnpm@11.22.0",
   "scripts": {
     "dev": "pnpm --filter ./apps/ui dev",
     "build": "pnpm clean && pnpm --filter ./apps/ui build && pnpm --filter ./apps/ui tauri:build && node scripts/collect-builds.js",
