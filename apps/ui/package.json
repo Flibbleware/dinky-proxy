@@ -16,7 +16,7 @@
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",
     "@radix-ui/react-label": "^2.1.10",
-    "@radix-ui/react-tooltip": "^1.2.9",
+    "@radix-ui/react-tooltip": "^1.2.13",
     "@tanstack/react-router": "^1.170.15",
     "@tauri-apps/api": "^2.11.1",
     "clsx": "^2.1.1",
@@ -30,9 +30,9 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.5",
-    "@playwright/test": "1.61.0",
-    "@tailwindcss/vite": "^4.3.1",
-    "@tanstack/router-cli": "^1.167.17",
+    "@playwright/test": "1.61.1",
+    "@tailwindcss/vite": "^4.3.3",
+    "@tanstack/router-cli": "^1.167.28",
     "@tanstack/router-plugin": "^1.168.19",
     "@tauri-apps/cli": "^2.11.4",
     "@types/node": "^24.13.2",
