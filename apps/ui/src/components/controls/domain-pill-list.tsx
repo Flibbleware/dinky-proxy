@@ -1,11 +1,13 @@
 import { X } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 type Props = {
   domains: string[]
+  obscured?: boolean
   onRemove: (domain: string) => void
 }
 
-const DomainPillList = ({ domains, onRemove }: Props) => {
+const DomainPillList = ({ domains, obscured = false, onRemove }: Props) => {
   if (!domains.length) return null
 
   return (
@@ -16,7 +18,9 @@ const DomainPillList = ({ domains, onRemove }: Props) => {
           key={domain}
           className="inline-flex items-center gap-1 rounded-full border border-brand bg-slate-800 px-3 py-1 text-slate-200 text-xs"
         >
-          {domain}
+          <span className={cn(obscured && 'select-none rounded-sm bg-slate-700 text-transparent')}>
+            {domain}
+          </span>
           <button
             type="button"
             onClick={() => onRemove(domain)}
