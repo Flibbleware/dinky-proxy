@@ -9,12 +9,13 @@ test('loads the settings page', async ({ page, pageUrl }) => {
 test('shows all basic fields on load', async ({ page, pageUrl }) => {
   await page.goto(pageUrl)
 
-  // `exact` distinguishes the inputs from the adjacent "More information about …" help triggers.
+  // `exact` distinguishes the inputs from the adjacent "More information about …" help triggers
+  // and, for Domains, from the "Hide domains" visibility toggle.
   await expect(page.getByLabel('Host', { exact: true })).toBeVisible()
   await expect(page.getByLabel('Port', { exact: true })).toBeVisible()
   await expect(page.getByLabel('Username')).toBeVisible()
   await expect(page.getByLabel('Password', { exact: true })).toBeVisible()
-  await expect(page.getByLabel('Domains')).toBeVisible()
+  await expect(page.getByLabel('Domains', { exact: true })).toBeVisible()
 })
 
 test('shows validation error for empty required field', async ({ page, pageUrl }) => {
@@ -79,7 +80,7 @@ test('returns to basic settings with the toggle', async ({ page, pageUrl }) => {
 test('adds a domain as a pill on Enter', async ({ page, pageUrl }) => {
   await page.goto(pageUrl)
 
-  const domainsInput = page.getByLabel('Domains')
+  const domainsInput = page.getByLabel('Domains', { exact: true })
   await domainsInput.fill('example.com')
   await domainsInput.press('Enter')
 
@@ -90,7 +91,7 @@ test('adds a domain as a pill on Enter', async ({ page, pageUrl }) => {
 test('normalizes a pasted URL down to its domain', async ({ page, pageUrl }) => {
   await page.goto(pageUrl)
 
-  const domainsInput = page.getByLabel('Domains')
+  const domainsInput = page.getByLabel('Domains', { exact: true })
   await domainsInput.fill('https://www.fakedomain.com/programming')
   await domainsInput.press('Enter')
 
@@ -103,7 +104,7 @@ test('preserves subdomains other than www when normalizing a pasted URL', async 
 }) => {
   await page.goto(pageUrl)
 
-  const domainsInput = page.getByLabel('Domains')
+  const domainsInput = page.getByLabel('Domains', { exact: true })
   await domainsInput.fill('https://mail.fakedomain.com/mail/u/0')
   await domainsInput.press('Enter')
 
@@ -113,7 +114,7 @@ test('preserves subdomains other than www when normalizing a pasted URL', async 
 test('removes a domain pill', async ({ page, pageUrl }) => {
   await page.goto(pageUrl)
 
-  const domainsInput = page.getByLabel('Domains')
+  const domainsInput = page.getByLabel('Domains', { exact: true })
   await domainsInput.fill('example.com')
   await domainsInput.press('Enter')
   await expect(page.getByRole('button', { name: 'Remove example.com' })).toBeVisible()
@@ -125,7 +126,7 @@ test('removes a domain pill', async ({ page, pageUrl }) => {
 test('does not add duplicate domains', async ({ page, pageUrl }) => {
   await page.goto(pageUrl)
 
-  const domainsInput = page.getByLabel('Domains')
+  const domainsInput = page.getByLabel('Domains', { exact: true })
   await domainsInput.fill('example.com')
   await domainsInput.press('Enter')
   await domainsInput.fill('example.com')
@@ -137,7 +138,7 @@ test('does not add duplicate domains', async ({ page, pageUrl }) => {
 test('adds multiple domains as pills', async ({ page, pageUrl }) => {
   await page.goto(pageUrl)
 
-  const domainsInput = page.getByLabel('Domains')
+  const domainsInput = page.getByLabel('Domains', { exact: true })
   await domainsInput.fill('example.com')
   await domainsInput.press('Enter')
   await domainsInput.fill('*.internal.company')
@@ -146,4 +147,21 @@ test('adds multiple domains as pills', async ({ page, pageUrl }) => {
   await expect(page.getByRole('button', { name: 'Remove example.com' })).toBeVisible()
   await expect(page.getByRole('button', { name: 'Remove *.internal.company' })).toBeVisible()
   await fullPageScreenshot(page, 'settings-domains-pills')
+})
+
+test('obscures domain pills with the visibility toggle', async ({ page, pageUrl }) => {
+  await page.goto(pageUrl)
+
+  const domainsInput = page.getByLabel('Domains', { exact: true })
+  await domainsInput.fill('example.com')
+  await domainsInput.press('Enter')
+
+  await page.getByRole('button', { name: 'Hide domains' }).click()
+
+  await expect(page.getByRole('button', { name: 'Show domains' })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Remove example.com' })).toBeVisible()
+  await fullPageScreenshot(page, 'settings-domains-obscured')
+
+  await page.getByRole('button', { name: 'Show domains' }).click()
+  await expect(page.getByRole('button', { name: 'Hide domains' })).toBeVisible()
 })
