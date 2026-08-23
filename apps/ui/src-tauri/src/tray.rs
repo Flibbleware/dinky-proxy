@@ -4,8 +4,10 @@ use std::sync::OnceLock;
 use tauri::{
     image::Image,
     menu::{Menu, MenuItem, PredefinedMenuItem},
-    AppHandle, Manager,
+    AppHandle, Emitter, Manager,
 };
+
+pub const SERVER_STATE_EVENT: &str = "server-running-changed";
 
 pub(crate) fn build_tray_menu(
     app: &AppHandle,
@@ -78,8 +80,9 @@ pub fn get_app_icon(is_active: bool) -> Image<'static> {
     Image::new_owned(img.as_raw().clone(), width, height)
 }
 
-pub async fn update_tray_state(app: &AppHandle) {
-    // Recreate the menu with updated text
+/// Single choke point for propagating a start/stop to every surface that shows
+/// the running state; call it after any change so the tray and UI cannot drift.
+pub async fn sync_server_state(app: &AppHandle) {
     let server_manager = app.state::<ServerManager>();
     let is_running = server_manager.is_running().await;
     let text = if is_running { "Disable" } else { "Enable" };
@@ -90,5 +93,12 @@ pub async fn update_tray_state(app: &AppHandle) {
         if let Ok(menu) = build_tray_menu(app, text) {
             let _ = tray.set_menu(Some(menu));
         }
+    }
+
+    if let Err(err) = app.emit(SERVER_STATE_EVENT, is_running) {
+        eprintln!(
+            "[Tray] Failed to notify the UI of the server state: {}",
+            err
+        );
     }
 }

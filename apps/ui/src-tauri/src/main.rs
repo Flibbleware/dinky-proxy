@@ -32,14 +32,19 @@ fn handle_menu_event(app: &AppHandle, event: tauri::menu::MenuEvent) {
                 let server_manager = app_handle.state::<ServerManager>();
                 let is_running = server_manager.is_running().await;
 
-                if is_running {
-                    let _ = commands::stop_server_command(app_handle.clone()).await;
+                let result = if is_running {
+                    commands::stop_server_command(app_handle.clone()).await
                 } else {
-                    let _ = commands::start_server_command(app_handle.clone()).await;
-                }
+                    commands::start_server_command(app_handle.clone()).await
+                };
 
-                // Update menu text and icon
-                tray::update_tray_state(&app_handle).await;
+                // Both commands sync the tray and UI themselves on success. On
+                // failure nothing moved, so re-assert the unchanged state rather
+                // than leaving the menu describing a toggle that never happened.
+                if let Err(err) = result {
+                    eprintln!("[App] Failed to toggle the server from the tray: {}", err);
+                    tray::sync_server_state(&app_handle).await;
+                }
             });
         }
         "quit" => {
