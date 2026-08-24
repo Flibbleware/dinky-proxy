@@ -32,7 +32,7 @@
     "@biomejs/biome": "^2.5.5",
     "@playwright/test": "1.61.1",
     "@tailwindcss/vite": "^4.3.3",
-    "@tanstack/router-cli": "^1.167.28",
+    "@tanstack/router-cli": "^1.167.30",
     "@tanstack/router-plugin": "^1.168.19",
     "@tauri-apps/cli": "^2.11.4",
     "@types/node": "^24.13.2",
