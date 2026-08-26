@@ -1,4 +1,5 @@
 import { invoke } from '@tauri-apps/api/core'
+import { listen, type UnlistenFn } from '@tauri-apps/api/event'
 import type { ConfigurationValues } from '@/screens/configuration/types'
 
 const Command = {
@@ -22,3 +23,11 @@ export const startServer = (): Promise<void> => invoke<void>(Command.StartServer
 export const stopServer = (): Promise<void> => invoke<void>(Command.StopServer)
 
 export const isServerRunning = (): Promise<boolean> => invoke<boolean>(Command.IsServerRunning)
+
+const ServerRunningChanged = 'server-running-changed'
+
+export const onServerRunningChanged = (
+  handler: (isRunning: boolean) => void,
+): Promise<UnlistenFn> => listen<boolean>(ServerRunningChanged, ({ payload }) => handler(payload))
+
+export type { UnlistenFn }

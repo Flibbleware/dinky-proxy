@@ -3,7 +3,7 @@ use tauri::{AppHandle, Manager};
 use crate::config::{load_config, normalize_config_payload, save_config, AppConfigPayload};
 use crate::keyring::MasterKey;
 use crate::server::ServerManager;
-use crate::tray::update_tray_state;
+use crate::tray::sync_server_state;
 
 fn get_master_key(app: &AppHandle) -> String {
     app.state::<MasterKey>().0.clone()
@@ -43,7 +43,7 @@ pub async fn save_config_command(
             .await
             .map_err(|e| format!("Failed to restart server: {}", e))?;
 
-        update_tray_state(&app_handle).await;
+        sync_server_state(&app_handle).await;
     }
 
     Ok(serde_json::json!({
@@ -62,7 +62,7 @@ pub async fn start_server_command(app_handle: AppHandle) -> Result<(), String> {
         .await
         .map_err(|e| format!("Failed to start server: {}", e))?;
 
-    update_tray_state(&app_handle).await;
+    sync_server_state(&app_handle).await;
     Ok(())
 }
 
@@ -74,7 +74,7 @@ pub async fn stop_server_command(app_handle: AppHandle) -> Result<(), String> {
         .await
         .map_err(|e| format!("Failed to stop server: {}", e))?;
 
-    update_tray_state(&app_handle).await;
+    sync_server_state(&app_handle).await;
     Ok(())
 }
 
