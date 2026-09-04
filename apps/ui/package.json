@@ -14,13 +14,13 @@
     "dead-code": "fallow dead-code"
   },
   "dependencies": {
-    "@hookform/resolvers": "^5.4.0",
+    "@hookform/resolvers": "^5.9.1",
     "@radix-ui/react-label": "^2.1.10",
     "@radix-ui/react-tooltip": "^1.2.16",
     "@tanstack/react-router": "^1.170.15",
     "@tauri-apps/api": "^2.11.1",
     "clsx": "^2.1.1",
-    "lucide-react": "^1.21.0",
+    "lucide-react": "^1.34.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "react-hook-form": "7.81.0",
@@ -29,7 +29,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.5.5",
+    "@biomejs/biome": "^2.5.10",
     "@playwright/test": "1.61.1",
     "@tailwindcss/vite": "^4.3.3",
     "@tanstack/router-cli": "^1.167.30",
