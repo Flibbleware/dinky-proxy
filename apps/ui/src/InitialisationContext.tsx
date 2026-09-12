@@ -1,11 +1,23 @@
 import { type PropsWithChildren, useEffect, useState } from 'react'
 import { toast } from 'sonner'
-import { isServerRunning, loadConfig, startServer, stopServer } from '@/commands'
+import {
+  isServerRunning,
+  loadConfig,
+  onServerRunningChanged,
+  startServer,
+  stopServer,
+  type UnlistenFn,
+} from '@/commands'
 import { AppContext, type AppContextValue } from './useInitialisation'
 
 type LoadState = Pick<AppContextValue, 'status' | 'config' | 'isRunning'>
 
 const INITIAL_STATE: LoadState = { status: 'loading', config: null, isRunning: null }
+
+const withIsRunning =
+  (value: boolean) =>
+  (prev: LoadState): LoadState =>
+    prev.status === 'ready' ? { ...prev, isRunning: value } : prev
 
 export const InitialisationProvider = ({ children }: PropsWithChildren) => {
   const [loadState, setLoadState] = useState<LoadState>(INITIAL_STATE)
@@ -28,8 +40,29 @@ export const InitialisationProvider = ({ children }: PropsWithChildren) => {
     return () => controller.abort()
   }, [])
 
-  const setIsRunning = (value: boolean) =>
-    setLoadState((prev) => (prev.status === 'ready' ? { ...prev, isRunning: value } : prev))
+  useEffect(() => {
+    let unlisten: UnlistenFn | undefined
+    let cancelled = false
+
+    void (async () => {
+      try {
+        const stop = await onServerRunningChanged((isRunning) =>
+          setLoadState(withIsRunning(isRunning)),
+        )
+        if (cancelled) stop()
+        else unlisten = stop
+      } catch (error) {
+        console.error('Failed to subscribe to server state changes', error)
+      }
+    })()
+
+    return () => {
+      cancelled = true
+      unlisten?.()
+    }
+  }, [])
+
+  const setIsRunning = (value: boolean) => setLoadState(withIsRunning(value))
 
   const toggleServer = async () => {
     if (loadState.status !== 'ready') return

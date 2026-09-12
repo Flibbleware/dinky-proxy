@@ -9,8 +9,13 @@ declare global {
   interface Window {
     __TAURI_INTERNALS__?: {
       invoke?: (cmd: string, args?: Record<string, unknown>) => Promise<unknown>
+      transformCallback?: (callback: (payload: unknown) => void, once?: boolean) => number
       [key: string]: unknown
     }
+    __TAURI_EVENT_PLUGIN_INTERNALS__?: {
+      unregisterListener: (event: string, eventId: number) => void
+    }
+    emitTauriEvent?: (event: string, payload: unknown) => void
   }
 }
 
@@ -52,11 +57,44 @@ export const test = base.extend<
 >({
   page: async ({ page }, use) => {
     await page.addInitScript((config) => {
+      // Enough of the Tauri event plugin for `listen` to work: the real backend
+      // hands the frontend a callback id, then invokes it by id when it emits.
+      const callbacks = new Map<number, (payload: unknown) => void>()
+      const listeners = new Map<string, Map<number, number>>()
+      let nextId = 0
+
       window.__TAURI_INTERNALS__ = window.__TAURI_INTERNALS__ ?? {}
-      window.__TAURI_INTERNALS__.invoke = async (cmd) => {
+
+      window.__TAURI_INTERNALS__.transformCallback = (callback) => {
+        const callbackId = ++nextId
+        callbacks.set(callbackId, callback)
+        return callbackId
+      }
+
+      window.__TAURI_INTERNALS__.invoke = async (cmd, args) => {
         if (cmd === 'load_config_command') return config
         if (cmd === 'is_server_running_command') return false
+        if (cmd === 'plugin:event|listen') {
+          const event = String(args?.event)
+          const eventId = ++nextId
+          const forEvent = listeners.get(event) ?? new Map<number, number>()
+          forEvent.set(eventId, Number(args?.handler))
+          listeners.set(event, forEvent)
+          return eventId
+        }
         return null
+      }
+
+      window.__TAURI_EVENT_PLUGIN_INTERNALS__ = {
+        unregisterListener: (event, eventId) => {
+          listeners.get(event)?.delete(eventId)
+        },
+      }
+
+      window.emitTauriEvent = (event, payload) => {
+        for (const [eventId, callbackId] of listeners.get(event) ?? []) {
+          callbacks.get(callbackId)?.({ event, id: eventId, payload })
+        }
       }
     }, DEFAULT_CONFIG_STUB)
     await use(page)

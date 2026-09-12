@@ -1,3 +1,4 @@
+import { SERVER_STATE_EVENT } from '../../src/events'
 import { expect, fullPageScreenshot, test } from '../tauri-fixture'
 
 test('loads the settings page', async ({ page, pageUrl }) => {
@@ -164,4 +165,23 @@ test('obscures domain pills with the visibility toggle', async ({ page, pageUrl 
 
   await page.getByRole('button', { name: 'Show domains' }).click()
   await expect(page.getByRole('button', { name: 'Hide domains' })).toBeVisible()
+})
+
+test('mirrors a proxy state change made outside the UI', async ({ page, pageUrl }) => {
+  await page.goto(pageUrl)
+
+  await expect(page.getByRole('button', { name: 'Enable' })).toBeVisible()
+  await expect(page.getByLabel('Host', { exact: true })).toBeEnabled()
+
+  // Stands in for the tray menu toggling the proxy: the backend emits, and the
+  // UI has no other way to hear about a change it did not initiate.
+  await page.evaluate((event) => window.emitTauriEvent?.(event, true), SERVER_STATE_EVENT)
+
+  await expect(page.getByRole('button', { name: 'Disable' })).toBeVisible()
+  await expect(page.getByLabel('Host', { exact: true })).toBeDisabled()
+
+  await page.evaluate((event) => window.emitTauriEvent?.(event, false), SERVER_STATE_EVENT)
+
+  await expect(page.getByRole('button', { name: 'Enable' })).toBeVisible()
+  await expect(page.getByLabel('Host', { exact: true })).toBeEnabled()
 })
