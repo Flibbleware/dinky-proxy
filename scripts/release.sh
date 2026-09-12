@@ -36,6 +36,19 @@ TAG="v$VERSION"
 
 cd "$(git rev-parse --show-toplevel)"
 
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+if [[ "$BRANCH" != "main" ]]; then
+  echo "error: releases must be cut from main, not '$BRANCH'"
+  echo "  a bump committed on a feature branch is lost when the PR is squash-merged"
+  exit 1
+fi
+
+git fetch origin main --quiet
+if ! git merge-base --is-ancestor origin/main HEAD; then
+  echo "error: HEAD is behind origin/main — pull before releasing"
+  exit 1
+fi
+
 if ! git diff --quiet || ! git diff --cached --quiet; then
   echo "error: working tree has uncommitted changes — commit or stash them first"
   exit 1
