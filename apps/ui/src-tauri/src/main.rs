@@ -38,12 +38,8 @@ fn handle_menu_event(app: &AppHandle, event: tauri::menu::MenuEvent) {
                     commands::start_server_command(app_handle.clone()).await
                 };
 
-                // Both commands sync the tray and UI themselves on success. On
-                // failure nothing moved, so re-assert the unchanged state rather
-                // than leaving the menu describing a toggle that never happened.
                 if let Err(err) = result {
                     eprintln!("[App] Failed to toggle the server from the tray: {}", err);
-                    tray::sync_server_state(&app_handle).await;
                 }
             });
         }

@@ -81,7 +81,8 @@ pub fn get_app_icon(is_active: bool) -> Image<'static> {
 }
 
 /// Single choke point for propagating a start/stop to every surface that shows
-/// the running state; call it after any change so the tray and UI cannot drift.
+/// the running state; call it after every attempt, failures included, since a
+/// half-completed start or stop moves the state just as a successful one does.
 pub async fn sync_server_state(app: &AppHandle) {
     let server_manager = app.state::<ServerManager>();
     let is_running = server_manager.is_running().await;

@@ -38,12 +38,13 @@ pub async fn save_config_command(
 
     if was_running {
         let server_manager = app_handle.state::<ServerManager>();
-        server_manager
-            .restart(app_handle.clone(), master_key)
-            .await
-            .map_err(|e| format!("Failed to restart server: {}", e))?;
+        let restarted = server_manager.restart(app_handle.clone(), master_key).await;
 
+        // Sync before propagating: a restart that fails part way leaves the
+        // server stopped, so the failure moves the state just as a success does.
         sync_server_state(&app_handle).await;
+
+        restarted.map_err(|e| format!("Failed to restart server: {}", e))?;
     }
 
     Ok(serde_json::json!({
@@ -57,25 +58,21 @@ pub async fn start_server_command(app_handle: AppHandle) -> Result<(), String> {
     let master_key = get_master_key(&app_handle);
 
     let server_manager = app_handle.state::<ServerManager>();
-    server_manager
-        .start(app_handle.clone(), master_key)
-        .await
-        .map_err(|e| format!("Failed to start server: {}", e))?;
+    let started = server_manager.start(app_handle.clone(), master_key).await;
 
     sync_server_state(&app_handle).await;
-    Ok(())
+
+    started.map_err(|e| format!("Failed to start server: {}", e))
 }
 
 #[tauri::command]
 pub async fn stop_server_command(app_handle: AppHandle) -> Result<(), String> {
     let server_manager = app_handle.state::<ServerManager>();
-    server_manager
-        .stop()
-        .await
-        .map_err(|e| format!("Failed to stop server: {}", e))?;
+    let stopped = server_manager.stop().await;
 
     sync_server_state(&app_handle).await;
-    Ok(())
+
+    stopped.map_err(|e| format!("Failed to stop server: {}", e))
 }
 
 #[tauri::command]
