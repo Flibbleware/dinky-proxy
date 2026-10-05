@@ -34,7 +34,7 @@
     "@tailwindcss/vite": "^4.3.3",
     "@tanstack/router-cli": "^1.167.38",
     "@tanstack/router-plugin": "^1.168.19",
-    "@tauri-apps/cli": "^2.11.4",
+    "@tauri-apps/cli": "^2.12.0",
     "@types/node": "^24.13.3",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.7",
