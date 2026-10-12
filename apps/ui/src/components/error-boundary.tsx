@@ -4,10 +4,12 @@ type State = {
   error: Error | null
 }
 
-const AppError = ({ error, reset }: { error: Error; reset?: () => void }) => (
+const AppError = ({ error, reset }: { error: unknown; reset?: () => void }) => (
   <div className="flex min-h-screen flex-col items-center justify-center gap-4 p-8 text-center">
     <h1 className="font-semibold text-xl">Something went wrong</h1>
-    <p className="max-w-md text-muted-foreground text-sm">{error.message}</p>
+    <p className="max-w-md text-muted-foreground text-sm">
+      {error instanceof Error ? error.message : String(error)}
+    </p>
     {reset && (
       <button
         type="button"
